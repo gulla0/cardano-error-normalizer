@@ -35,13 +35,13 @@
 #### 3.3 Adapters Included in MVP
 - [x] `fromWalletError` implemented.
 - [x] `fromBlockfrostError` implemented.
-- [ ] `fromNodeStringError` implemented.
+- [x] `fromNodeStringError` implemented.
 - [ ] `fromMeshError` unwrap-first implemented.
 - [ ] Default adapter order matches `mvp.md`.
 
 #### 3.4 Heuristic Rules (MVP)
-- [ ] Regex mappings implemented for deserialise/input/output/value/script/wrapper paths.
-- [ ] Wrapper extraction behavior implemented (`ApplyTxError`, `ShelleyTxValidationError`).
+- [x] Regex mappings implemented for deserialise/input/output/value/script/wrapper paths.
+- [x] Wrapper extraction behavior implemented (`ApplyTxError`, `ShelleyTxValidationError`).
 
 #### 3.5 Canonical Mapping Tables (Source of Truth)
 - [x] CIP-30/CIP-95 mapping table implemented exactly.
@@ -68,7 +68,7 @@
 - [x] Phase committed.
 
 #### Phase 2: Wallet + Blockfrost Adapters
-- Status: `In Progress`
+- Status: `Completed`
 - [x] Wallet deterministic mappings complete.
 - [x] CIP-95 known extension handling complete.
 - [x] Blockfrost parser and mappings complete.
@@ -77,11 +77,11 @@
 - [x] Phase committed.
 
 #### Phase 3: Node Heuristics + Mesh Wrapper
-- Status: `Not Started`
-- [ ] Node regex adapter complete.
+- Status: `In Progress`
+- [x] Node regex adapter complete.
 - [ ] Mesh unwrap/delegate behavior complete.
-- [ ] Fallback behavior complete.
-- [ ] Phase tests passing.
+- [x] Fallback behavior complete.
+- [x] Phase tests passing.
 - [ ] Phase committed.
 
 #### Phase 4: Tests + Example + Docs
@@ -95,19 +95,18 @@
 
 ### 6) Acceptance Criteria Checklist
 - [x] `normalize()` always returns valid `CardanoAppError`.
-- [ ] Deterministic wallet and Blockfrost mappings pass.
 - [x] Deterministic wallet and Blockfrost mappings pass.
 - [x] Blockfrost `402` -> `QUOTA_EXCEEDED`.
 - [x] Blockfrost `418` -> `FORBIDDEN` + `meta.blockfrostReason="auto_banned"`.
 - [ ] Mesh-wrapped errors unwrap before heuristic fallback.
-- [ ] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
-- [ ] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
+- [x] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
+- [x] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
 - [x] Unknown shapes preserve `raw` and map to `UNKNOWN`.
 - [ ] CI tests pass.
 
 ## Current Build Focus
-- Active section: `Phase 2 - Wallet + Blockfrost Adapters`
-- Current task: `Implement wallet and Blockfrost adapters with table-driven mappings`
+- Active section: `Phase 3 - Node Heuristics + Mesh Wrapper`
+- Current task: `Implement Mesh unwrap/delegate adapter and complete default adapter order`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -135,14 +134,21 @@
 - Reason: Wallet `code` values overlap across sign/send families; Blockfrost errors commonly arrive wrapped by HTTP clients.
 - Impact: Deterministic table mappings are preserved while handling real-world wrapped payload shapes.
 
+- Date: 2026-02-17
+- Section: Phase 3 node string heuristics
+- Decision: Prioritize inner ledger tag regex matches before wrapper fallback so `ApplyTxError`/`ShelleyTxValidationError` map to specific codes when possible, else `TX_LEDGER_VALIDATION_FAILED`.
+- Reason: Wrapper tags are containers and should not override specific failures (`BadInputsUTxO`, `ValueNotConservedUTxO`, etc.).
+- Impact: Fixture-backed node mappings are deterministic while preserving a safe fallback for ambiguous wrapper-only errors.
+
 ## Testing Notes
 - Last run: 2026-02-17
-- Result: Pass (8/8 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added and validated table-driven wallet + Blockfrost mapping tests plus key-order-agnostic nested `response.data` parsing.
+- Result: Pass (12/12 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added fixture-backed node string heuristic tests for deserialise/input/output/value mappings, script-pattern mapping, and wrapper fallback handling.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
 - 2026-02-17: `7645082` - Implement Phase 2 wallet + Blockfrost adapters and table-driven mapping tests.
+- 2026-02-17: `1778390` - Update progress log after Phase 2 commit.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
