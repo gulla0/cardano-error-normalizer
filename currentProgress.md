@@ -33,8 +33,8 @@
 - [x] No extra non-MVP codes introduced.
 
 #### 3.3 Adapters Included in MVP
-- [ ] `fromWalletError` implemented.
-- [ ] `fromBlockfrostError` implemented.
+- [x] `fromWalletError` implemented.
+- [x] `fromBlockfrostError` implemented.
 - [ ] `fromNodeStringError` implemented.
 - [ ] `fromMeshError` unwrap-first implemented.
 - [ ] Default adapter order matches `mvp.md`.
@@ -44,9 +44,9 @@
 - [ ] Wrapper extraction behavior implemented (`ApplyTxError`, `ShelleyTxValidationError`).
 
 #### 3.5 Canonical Mapping Tables (Source of Truth)
-- [ ] CIP-30/CIP-95 mapping table implemented exactly.
-- [ ] Blockfrost status mapping table implemented exactly.
-- [ ] Table-driven tests added for both mappings.
+- [x] CIP-30/CIP-95 mapping table implemented exactly.
+- [x] Blockfrost status mapping table implemented exactly.
+- [x] Table-driven tests added for both mappings.
 
 #### 3.6 Public API (MVP)
 - [x] `NormalizeContext` implemented.
@@ -68,12 +68,12 @@
 - [x] Phase committed.
 
 #### Phase 2: Wallet + Blockfrost Adapters
-- Status: `Not Started`
-- [ ] Wallet deterministic mappings complete.
-- [ ] CIP-95 known extension handling complete.
-- [ ] Blockfrost parser and mappings complete.
-- [ ] `raw` + `meta` preservation complete.
-- [ ] Phase tests passing.
+- Status: `In Progress`
+- [x] Wallet deterministic mappings complete.
+- [x] CIP-95 known extension handling complete.
+- [x] Blockfrost parser and mappings complete.
+- [x] `raw` + `meta` preservation complete.
+- [x] Phase tests passing.
 - [ ] Phase committed.
 
 #### Phase 3: Node Heuristics + Mesh Wrapper
@@ -96,8 +96,8 @@
 ### 6) Acceptance Criteria Checklist
 - [x] `normalize()` always returns valid `CardanoAppError`.
 - [ ] Deterministic wallet and Blockfrost mappings pass.
-- [ ] Blockfrost `402` -> `QUOTA_EXCEEDED`.
-- [ ] Blockfrost `418` -> `FORBIDDEN` + `meta.blockfrostReason="auto_banned"`.
+- [x] Blockfrost `402` -> `QUOTA_EXCEEDED`.
+- [x] Blockfrost `418` -> `FORBIDDEN` + `meta.blockfrostReason="auto_banned"`.
 - [ ] Mesh-wrapped errors unwrap before heuristic fallback.
 - [ ] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
 - [ ] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
@@ -128,14 +128,20 @@
 - Reason: Avoid TypeScript `ts(2307)` in environments without Node builtin type declarations.
 - Impact: Fingerprinting remains deterministic without runtime-specific imports.
 
+- Date: 2026-02-17
+- Section: Phase 2 adapter behavior
+- Decision: Map CIP-30/CIP-95 wallet positive numeric codes by normalized `info` discriminator and accept Blockfrost payloads from direct object or nested `response.data`.
+- Reason: Wallet `code` values overlap across sign/send families; Blockfrost errors commonly arrive wrapped by HTTP clients.
+- Impact: Deterministic table mappings are preserved while handling real-world wrapped payload shapes.
+
 ## Testing Notes
 - Last run: 2026-02-17
-- Result: Pass (3/3 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; verified fallback validity, adapter ordering, and fingerprint determinism after removing `node:crypto` import.
+- Result: Pass (8/8 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added and validated table-driven wallet + Blockfrost mapping tests plus key-order-agnostic nested `response.data` parsing.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
-- Pending: commit for fingerprint compatibility fix (`src/utils/fingerprint.ts`).
+- Pending: commit for Phase 2 wallet + Blockfrost adapters and mapping tests.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.

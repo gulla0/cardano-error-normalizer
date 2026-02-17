@@ -5,11 +5,13 @@ import type {
   Normalizer,
   NormalizerConfig
 } from "./types.ts";
+import { fromBlockfrostError } from "./adapters/blockfrost.ts";
+import { fromWalletError } from "./adapters/wallet.ts";
 import { createErrorFingerprint } from "./utils/fingerprint.ts";
 import { extractErrorMessage } from "./utils/guards.ts";
 
 const DEFAULT_CONFIG: NormalizerConfig = {
-  adapters: [],
+  adapters: [fromWalletError, fromBlockfrostError],
   includeFingerprint: false
 };
 
