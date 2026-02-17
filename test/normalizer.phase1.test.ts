@@ -86,3 +86,29 @@ test("includeFingerprint adds deterministic fingerprint from normalized tuple", 
   assert.match(first.fingerprint ?? "", /^[a-f0-9]{16}$/);
   assert.equal(first.fingerprint, second.fingerprint);
 });
+
+test("default adapter order unwraps mesh errors before node heuristics", () => {
+  const normalizer = createNormalizer();
+  const wrapped = {
+    message: "ApplyTxError: BadInputsUTxO while submitting transaction",
+    cause: {
+      response: {
+        data: {
+          status_code: 402,
+          error: "Payment Required",
+          message: "Project daily request limit reached."
+        }
+      }
+    }
+  };
+
+  const result = normalizer.normalize(wrapped, {
+    source: "provider_submit",
+    stage: "submit",
+    provider: "mesh"
+  });
+
+  assert.equal(result.code, "QUOTA_EXCEEDED");
+  assert.equal(result.provider, "blockfrost");
+  assert.equal((result.meta as { meshUnwrapped?: boolean }).meshUnwrapped, true);
+});

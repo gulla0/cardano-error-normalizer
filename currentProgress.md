@@ -37,8 +37,8 @@
 - [x] `fromWalletError` implemented.
 - [x] `fromBlockfrostError` implemented.
 - [x] `fromNodeStringError` implemented.
-- [ ] `fromMeshError` unwrap-first implemented.
-- [ ] Default adapter order matches `mvp.md`.
+- [x] `fromMeshError` unwrap-first implemented.
+- [x] Default adapter order matches `mvp.md`.
 
 #### 3.4 Heuristic Rules (MVP)
 - [x] Regex mappings implemented for deserialise/input/output/value/script/wrapper paths.
@@ -54,7 +54,7 @@
 - [x] `AdapterFn`, `Normalizer`, `createNormalizer` exported.
 
 ### 4) Repository and Package Structure
-- [ ] `/src` structure matches plan.
+- [x] `/src` structure matches plan.
 - [ ] `/test` fixture and test file structure matches plan.
 - [ ] `/examples/mesh-blockfrost-eternl.ts` added.
 
@@ -78,12 +78,12 @@
 - [x] Phase committed.
 
 #### Phase 3: Node Heuristics + Mesh Wrapper
-- Status: `In Progress`
+- Status: `Completed`
 - [x] Node regex adapter complete.
-- [ ] Mesh unwrap/delegate behavior complete.
+- [x] Mesh unwrap/delegate behavior complete.
 - [x] Fallback behavior complete.
 - [x] Phase tests passing.
-- [ ] Phase committed.
+- [x] Phase committed.
 
 #### Phase 4: Tests + Example + Docs
 - Status: `Not Started`
@@ -99,15 +99,15 @@
 - [x] Deterministic wallet and Blockfrost mappings pass.
 - [x] Blockfrost `402` -> `QUOTA_EXCEEDED`.
 - [x] Blockfrost `418` -> `FORBIDDEN` + `meta.blockfrostReason="auto_banned"`.
-- [ ] Mesh-wrapped errors unwrap before heuristic fallback.
+- [x] Mesh-wrapped errors unwrap before heuristic fallback.
 - [x] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
 - [x] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
 - [x] Unknown shapes preserve `raw` and map to `UNKNOWN`.
 - [ ] CI tests pass.
 
 ## Current Build Focus
-- Active section: `Phase 3 - Node Heuristics + Mesh Wrapper`
-- Current task: `Implement Mesh unwrap/delegate adapter and complete default adapter order`
+- Active section: `Phase 4 - Tests + Example + Docs`
+- Current task: `Build integration test/doc/example checklist from MVP structure`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -141,10 +141,16 @@
 - Reason: Wrapper tags are containers and should not override specific failures (`BadInputsUTxO`, `ValueNotConservedUTxO`, etc.).
 - Impact: Fixture-backed node mappings are deterministic while preserving a safe fallback for ambiguous wrapper-only errors.
 
+- Date: 2026-02-17
+- Section: Phase 3 mesh unwrap adapter
+- Decision: Add `fromMeshError` as the first default adapter and delegate recursively extracted nested payloads through wallet, Blockfrost, then node adapters; preserve original wrapped `raw` and tag `meta.meshUnwrapped=true`.
+- Reason: Mesh/provider wrappers can nest actionable payloads (for example `cause.response.data`) deep enough that direct adapter scans miss deterministic mappings.
+- Impact: Provider/wallet deterministic mappings now win before node-string heuristics on wrapped mixed-stack errors.
+
 ## Testing Notes
 - Last run: 2026-02-17
-- Result: Pass (12/12 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added fixture-backed node string heuristic tests for deserialise/input/output/value mappings, script-pattern mapping, and wrapper fallback handling.
+- Result: Pass (16/16 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added mesh adapter unit tests for nested Blockfrost/wallet unwrap behavior and a default-order integration assertion that mesh unwrap mapping beats node-string fallback.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.

@@ -13,4 +13,5 @@ export type { CardanoErrorCode } from "./codes.ts";
 export { createNormalizer } from "./normalizer.ts";
 export { fromWalletError } from "./adapters/wallet.ts";
 export { fromBlockfrostError } from "./adapters/blockfrost.ts";
+export { fromMeshError } from "./adapters/mesh.ts";
 export { fromNodeStringError } from "./adapters/node-string.ts";
