@@ -191,4 +191,39 @@
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
 - [ ] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
+- [ ] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
+- [ ] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
+- [ ] Add regression fixtures/tests for any newly observed real-world errors.
+
+## Human Work Queue (One At A Time)
+Execution protocol:
+- Ask the human to complete exactly one human-owned task.
+- Wait for their response and collect the required artifacts/answers.
+- Log what was received in this file.
+- Continue only after required info for that task is complete.
+
+Task 1 (human):
+- Provide target package publish scope and constraints:
+  - npm org/user name
+  - public vs private package
+  - required Node/TypeScript support matrix
+  - whether dual ESM/CJS is required
+- Status: `Pending`
+- Needed by agent to proceed with publish-readiness implementation.
+
+Task 2 (human):
+- Provide real-world error payload samples from Mesh + Blockfrost + Eternl:
+  - at least 5 raw failures (wallet, provider, node-mixed if available)
+  - context per sample (`source`, `stage`, network, wallet/provider hints)
+  - expected behavior if known
+- Status: `Pending`
+- Needed by agent to add regression fixtures and validate mappings.
+
+Task 3 (human):
+- Confirm release decision:
+  - approve v0.1.0 release candidate scope
+  - approve changelog wording
+  - approve publish timing/window
+- Status: `Pending`
+- Needed by agent before final release/publish steps.
