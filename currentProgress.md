@@ -90,7 +90,7 @@
 - [x] Mapping branch unit tests complete.
 - [x] Integration adapter-order tests complete.
 - [x] Example integration snippet complete.
-- [ ] README quickstart + mapping docs complete.
+- [x] README quickstart + mapping docs complete.
 - [x] Full test suite passing.
 - [ ] Release candidate ready (`v0.1.0`).
 
@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Phase 4 - Tests + Example + Docs`
-- Current task: `Add README quickstart + mapping docs`
+- Current task: `Validate CI pass and finalize release candidate gate`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -165,10 +165,16 @@
 - Reason: Provide a minimal runnable reference for the primary MVP integration flow while demonstrating unwrap-first adapter behavior and fingerprint output.
 - Impact: Example gate in Phase 4 is complete and users now have an end-to-end usage snippet to bootstrap integration.
 
+- Date: 2026-02-17
+- Section: Phase 4 README documentation
+- Decision: Add root `/README.md` with quickstart, default adapter order, and canonical wallet/Blockfrost mapping tables plus node heuristic mapping summary.
+- Reason: Close the final docs deliverable in Phase 4 with a practical onboarding path tied directly to MVP mapping behavior.
+- Impact: Documentation gate for Phase 4 is now complete; only CI verification and release-candidate readiness remain.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding `examples/mesh-blockfrost-eternl.ts`; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding root `README.md` docs; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -178,8 +184,8 @@
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
-- [ ] Implement next unchecked item in active phase.
-- [ ] Run relevant tests until passing.
-- [ ] Update this file.
+- [ ] Validate CI checks are green for this branch/repo.
+- [ ] Mark `CI tests pass` acceptance criterion complete.
+- [ ] Mark release candidate ready (`v0.1.0`) if CI passes.
 - [ ] If the build is completed as per MVP, let the user know it is ready for real-time testing.
 - [ ] Commit.
