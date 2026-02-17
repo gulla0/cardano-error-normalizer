@@ -103,12 +103,12 @@
 - [x] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
 - [x] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
 - [x] Unknown shapes preserve `raw` and map to `UNKNOWN`.
-- [x] CI tests pass (local test gate; no repository CI workflow configured).
+- [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `MVP complete`
-- Current task: `Ready for real-time testing`
-- Blockers: `No CI workflow is configured in this repository`
+- Active section: `Post-MVP hardening`
+- Current task: `Collect human publish constraints (Task 1) before package publish-readiness implementation`
+- Blockers: `Human Task 1 pending: publish scope/constraints`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -177,20 +177,27 @@
 - Reason: The initiation workflow requires section testing before progress updates and commit; repository-local test execution is the only available automated gate.
 - Impact: Phase 4 is closed as `Completed` and the MVP is marked ready for real-time testing.
 
+- Date: 2026-02-17
+- Section: Next section: repository CI workflow
+- Decision: Add `.github/workflows/ci.yml` to run `npm ci` and `npm test` on `push` (`main`/`master`) and `pull_request` using Node 22 with npm cache.
+- Reason: The next non-blocked agent-owned item was CI enforcement for push/PR quality gates.
+- Impact: Test execution is now enforced in GitHub Actions, reducing regression risk beyond local-only checks.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding root `README.md` docs; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding `.github/workflows/ci.yml`; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
 - 2026-02-17: `7645082` - Implement Phase 2 wallet + Blockfrost adapters and table-driven mapping tests.
 - 2026-02-17: `1778390` - Update progress log after Phase 2 commit.
 - 2026-02-17: `c475253` - Add node string heuristic adapter and fixture-backed tests.
+- 2026-02-17: `pending` - Add GitHub Actions CI workflow and update progress tracking.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
-- [ ] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
+- [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
 - [ ] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
 - [ ] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
