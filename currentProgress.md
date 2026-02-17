@@ -107,8 +107,8 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Collect human publish constraints (Task 1) before package publish-readiness implementation`
-- Blockers: `Human Task 1 pending: publish scope/constraints`
+- Current task: `Add CHANGELOG.md entry for taxonomy v1 and known limitations`
+- Blockers: `None`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -183,10 +183,16 @@
 - Reason: The next non-blocked agent-owned item was CI enforcement for push/PR quality gates.
 - Impact: Test execution is now enforced in GitHub Actions, reducing regression risk beyond local-only checks.
 
+- Date: 2026-02-17
+- Section: Post-MVP publish-readiness package metadata
+- Decision: Use ESM-only publish configuration with `publishConfig.access=public`, `engines.node>=18`, package export/type entrypoints at `src/index.ts`, and a `prepublishOnly` test gate while keeping runtime/type transpilation out of this section.
+- Reason: Human Task 1 confirmed public ESM-only constraints and Node/TypeScript minimums; this section focuses on publish metadata + release files without expanding build-tool dependencies.
+- Impact: Repository is now package-publish ready at metadata level and safely gated by tests before publish.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding `.github/workflows/ci.yml`; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after publish-readiness metadata updates (`package.json`/lock, license file, README install/import package path); integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -194,11 +200,12 @@
 - 2026-02-17: `1778390` - Update progress log after Phase 2 commit.
 - 2026-02-17: `c475253` - Add node string heuristic adapter and fixture-backed tests.
 - 2026-02-17: `pending` - Add GitHub Actions CI workflow and update progress tracking.
+- 2026-02-17: `pending` - Add package publish-readiness metadata and release files.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
-- [ ] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
+- [x] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
 - [ ] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
 - [ ] Add regression fixtures/tests for any newly observed real-world errors.
@@ -216,7 +223,13 @@ Task 1 (human):
   - public vs private package
   - required Node/TypeScript support matrix
   - whether dual ESM/CJS is required
-- Status: `Pending`
+- Status: `Completed`
+- Received:
+  - `npmPackageName`: `@<your-npm-scope>/cardano-error-normalizer` (placeholder pattern; converted to valid scaffold value `@your-npm-scope/cardano-error-normalizer` in package metadata until final scope is provided)
+  - `access`: `public`
+  - `node`: `>=18`
+  - `typescript`: `>=5.2`
+  - `moduleFormat`: `esm-only`
 - Needed by agent to proceed with publish-readiness implementation.
 
 Task 2 (human):

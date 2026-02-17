@@ -1,9 +1,31 @@
 {
-  "name": "cardano-error-normalizer",
+  "name": "@your-npm-scope/cardano-error-normalizer",
   "version": "0.1.0",
-  "private": true,
+  "description": "Normalize heterogeneous Cardano stack errors into a stable CardanoAppError shape.",
+  "license": "MIT",
   "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "test": "node --experimental-strip-types --test"
-  }
+    "test": "node --experimental-strip-types --test",
+    "prepublishOnly": "npm test"
+  },
+  "packageManager": "npm@10"
 }
