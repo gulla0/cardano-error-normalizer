@@ -189,6 +189,12 @@
 - Reason: Human Task 1 confirmed public ESM-only constraints and Node/TypeScript minimums; this section focuses on publish metadata + release files without expanding build-tool dependencies.
 - Impact: Repository is now package-publish ready at metadata level and safely gated by tests before publish.
 
+- Date: 2026-02-17
+- Section: Repository hygiene
+- Decision: Add a root `.gitignore` covering npm credentials, dependency/build artifacts, environment files, logs, and OS clutter.
+- Reason: Prevent accidental commits of secrets and generated/local files during post-MVP hardening.
+- Impact: Git status now stays focused on meaningful source/documentation changes.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
@@ -199,8 +205,9 @@
 - 2026-02-17: `7645082` - Implement Phase 2 wallet + Blockfrost adapters and table-driven mapping tests.
 - 2026-02-17: `1778390` - Update progress log after Phase 2 commit.
 - 2026-02-17: `c475253` - Add node string heuristic adapter and fixture-backed tests.
-- 2026-02-17: `pending` - Add GitHub Actions CI workflow and update progress tracking.
-- 2026-02-17: `pending` - Add package publish-readiness metadata and release files.
+- 2026-02-17: `b408847` - Add GitHub Actions CI workflow for npm test.
+- 2026-02-17: `970a4f5` - Prepare package publish metadata for public ESM release.
+- 2026-02-17: `pending` - Add repository `.gitignore` and sync progress tracking.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
