@@ -1,0 +1,6 @@
+[
+  { "label": "402_quota_exceeded", "err": { "status_code": 402, "error": "Payment Required", "message": "Daily request limit exceeded." } },
+  { "label": "418_auto_banned", "err": { "status_code": 418, "error": "I'm a teapot", "message": "You have been auto-banned for flooding." } },
+  { "label": "425_mempool_full", "err": { "status_code": 425, "error": "Too Early", "message": "Mempool is full, not accepting new txs straight away." } },
+  { "label": "429_rate_limited", "err": { "status_code": 429, "error": "Too Many Requests", "message": "Rate limited." } }
+]

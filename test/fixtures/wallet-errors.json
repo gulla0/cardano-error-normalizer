@@ -1,0 +1,11 @@
+[
+  { "label": "APIError_InvalidRequest", "err": { "code": -1, "info": "Invalid request parameters" } },
+  { "label": "APIError_InternalError", "err": { "code": -2, "info": "Unexpected wallet internal failure" } },
+  { "label": "APIError_Refused", "err": { "code": -3, "info": "Wallet refused the request" } },
+  { "label": "APIError_AccountChange", "err": { "code": -4, "info": "Account changed; re-enable required" } },
+  { "label": "TxSign_ProofGeneration", "err": { "code": 1, "info": "ProofGeneration" } },
+  { "label": "TxSign_UserDeclined", "err": { "code": 2, "info": "UserDeclined" } },
+  { "label": "TxSign_DeprecatedCert", "err": { "code": 3, "info": "DeprecatedCertificate" } },
+  { "label": "TxSend_Refused", "err": { "code": 1, "info": "Refused" } },
+  { "label": "TxSend_Failure", "err": { "code": 2, "info": "Failure" } }
+]

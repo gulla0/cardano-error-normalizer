@@ -1,0 +1,4 @@
+DeserialiseFailure: expected word
+Error while submitting tx: ShelleyTxValidationError ShelleyBasedEraAllegra (ApplyTxError [LedgerFailure (UtxowFailure (UtxoFailure (BadInputsUTxO (fromList [TxInCompact ...]))))])
+Error while submitting tx: ShelleyTxValidationError ShelleyBasedEraAllegra (ApplyTxError [LedgerFailure (UtxowFailure (UtxoFailure (ValueNotConservedUTxO (DeltaCoin 0) (DeltaCoin 177557)))))])
+Error while submitting tx: ShelleyTxValidationError ShelleyBasedEraAlonzo (ApplyTxError [UtxowFailure (WrappedShelleyEraFailure (UtxoFailure (OutputTooSmallUTxO [...])) )])

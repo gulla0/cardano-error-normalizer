@@ -118,11 +118,45 @@ Regex-to-code mappings:
 
 Blockfrost status mappings (MVP):
 - `402` -> `QUOTA_EXCEEDED` (daily request limit exceeded)
-- `418` -> `RATE_LIMITED` (auto-ban after flooding)
+- `418` -> `FORBIDDEN` (auto-ban after flooding)
 - `425` -> `MEMPOOL_FULL`
 - `429` -> `RATE_LIMITED`
 
-### 3.5 Public API (MVP)
+### 3.5 Canonical Mapping Tables (Source of Truth)
+Use these tables as the implementation source of truth for adapters and fixture-backed tests.
+
+#### Table 1: CIP-30 / CIP-95 `{code, info}` to `CardanoErrorCode`
+| Wallet error family        | Numeric `code` | Meaning (spec)        | Map to `CardanoErrorCode`                                               |
+| -------------------------- | -------------: | --------------------- | ----------------------------------------------------------------------- |
+| `APIError` (CIP-30/95)     |           `-1` | InvalidRequest        | `WALLET_INVALID_REQUEST`                                                |
+| `APIError` (CIP-30/95)     |           `-2` | InternalError         | `WALLET_INTERNAL`                                                       |
+| `APIError` (CIP-30/95)     |           `-3` | Refused               | `WALLET_REFUSED`                                                        |
+| `APIError` (CIP-30/95)     |           `-4` | AccountChange         | `WALLET_ACCOUNT_CHANGED`                                                |
+| `TxSignError` (CIP-30)     |            `1` | ProofGeneration       | `WALLET_SIGN_PROOF_GENERATION`                                          |
+| `TxSignError` (CIP-30)     |            `2` | UserDeclined          | `WALLET_SIGN_USER_DECLINED`                                             |
+| `TxSignError` (CIP-95 ext) |            `3` | DeprecatedCertificate | `TX_LEDGER_VALIDATION_FAILED`                                           |
+| `TxSendError` (CIP-30)     |            `1` | Refused               | `WALLET_SUBMIT_REFUSED`                                                 |
+| `TxSendError` (CIP-30)     |            `2` | Failure               | `WALLET_SUBMIT_FAILURE`                                                 |
+
+#### Table 2: Blockfrost HTTP status to `CardanoErrorCode`
+| HTTP status | Meaning (Blockfrost)                       | Map to `CardanoErrorCode` | Notes (store in `meta`)                |
+| ----------: | ------------------------------------------ | ------------------------- | -------------------------------------- |
+|       `400` | invalid request                            | `BAD_REQUEST`             |                                        |
+|       `402` | daily request limit exceeded               | `QUOTA_EXCEEDED`          | `meta.blockfrostReason="daily_limit"`  |
+|       `403` | not authenticated                          | `UNAUTHORIZED`            |                                        |
+|       `404` | resource does not exist                    | `NOT_FOUND`               |                                        |
+|       `418` | auto-banned after flooding (after 402/429) | `FORBIDDEN`               | `meta.blockfrostReason="auto_banned"`  |
+|       `425` | mempool full, not accepting new txs        | `MEMPOOL_FULL`            | `meta.blockfrostReason="mempool_full"` |
+|       `429` | rate limited                               | `RATE_LIMITED`            |                                        |
+|       `5xx` | server side error                          | `PROVIDER_INTERNAL`       |                                        |
+| other `4xx` | other client error                         | `BAD_REQUEST`             | keep `raw`                             |
+
+Usage by phase:
+- Phase 2: implement `fromWalletError` and `fromBlockfrostError` strictly from these tables.
+- Phase 3: implement node-string regex extraction and validate against node fixtures containing `ApplyTxError` wrappers and tags like `BadInputsUTxO`, `ValueNotConservedUTxO`, and `OutputTooSmallUTxO`.
+- Phase 4: replay fixtures and assert codes and metadata.
+
+### 3.6 Public API (MVP)
 ```ts
 export interface NormalizeContext {
   source: ErrorSource;
@@ -212,6 +246,7 @@ Deliverable:
   - CIP-30 wallet error codes, plus explicit handling for known CIP-95 extensions (e.g., `DeprecatedCertificate`).
   - Blockfrost HTTP statuses in MVP scope (402/403/404/418/425/429/5xx/4xx fallback), with payload parsing that is key-order agnostic.
 - Blockfrost `402` is mapped explicitly to `QUOTA_EXCEEDED` (not folded into generic `BAD_REQUEST`).
+- Blockfrost `418` maps to `FORBIDDEN` with `meta.blockfrostReason="auto_banned"`.
 - Mesh-wrapped errors are unwrapped before heuristic matching so provider/wallet-specific mappings win over node-string fallback.
 - Node string adapter correctly maps fixture errors for:
   - `BadInputsUTxO`
