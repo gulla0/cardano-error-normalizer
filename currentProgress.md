@@ -56,7 +56,7 @@
 ### 4) Repository and Package Structure
 - [x] `/src` structure matches plan.
 - [x] `/test` fixture and test file structure matches plan.
-- [ ] `/examples/mesh-blockfrost-eternl.ts` added.
+- [x] `/examples/mesh-blockfrost-eternl.ts` added.
 
 ### 5) Implementation Plan Status
 
@@ -89,7 +89,7 @@
 - Status: `In Progress`
 - [x] Mapping branch unit tests complete.
 - [x] Integration adapter-order tests complete.
-- [ ] Example integration snippet complete.
+- [x] Example integration snippet complete.
 - [ ] README quickstart + mapping docs complete.
 - [x] Full test suite passing.
 - [ ] Release candidate ready (`v0.1.0`).
@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Phase 4 - Tests + Example + Docs`
-- Current task: `Create /examples/mesh-blockfrost-eternl.ts integration snippet`
+- Current task: `Add README quickstart + mapping docs`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -159,10 +159,16 @@
 - Reason: Align `/test` structure with MVP plan while asserting runtime adapter precedence against mixed-shape payloads.
 - Impact: Integration test gate for adapter ordering is now explicitly covered and passing in the full suite.
 
+- Date: 2026-02-17
+- Section: Phase 4 example integration snippet
+- Decision: Add `/examples/mesh-blockfrost-eternl.ts` with a Mesh-style wrapped Blockfrost `402` payload and normalization context for a Blockfrost + Eternl path.
+- Reason: Provide a minimal runnable reference for the primary MVP integration flow while demonstrating unwrap-first adapter behavior and fingerprint output.
+- Impact: Example gate in Phase 4 is complete and users now have an end-to-end usage snippet to bootstrap integration.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; integration adapter-order tests now live in `test/normalizer.integration.test.ts`, including mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding `examples/mesh-blockfrost-eternl.ts`; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
