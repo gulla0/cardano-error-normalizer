@@ -48,6 +48,24 @@ test("fromBlockfrostError maps generic 4xx/5xx status ranges", () => {
   assert.equal(generic5xx?.code, "PROVIDER_INTERNAL");
 });
 
+test("fromBlockfrostError maps explicit 400/403/404 statuses", () => {
+  const badRequest = fromBlockfrostError({ status_code: 400, error: "Bad Request", message: "invalid" });
+  const unauthorized = fromBlockfrostError({
+    status_code: 403,
+    error: "Forbidden",
+    message: "not authenticated"
+  });
+  const notFound = fromBlockfrostError({
+    status_code: 404,
+    error: "Not Found",
+    message: "resource does not exist"
+  });
+
+  assert.equal(badRequest?.code, "BAD_REQUEST");
+  assert.equal(unauthorized?.code, "UNAUTHORIZED");
+  assert.equal(notFound?.code, "NOT_FOUND");
+});
+
 test("fromBlockfrostError accepts key-order agnostic payloads from nested response.data", () => {
   const wrapped = {
     response: {
@@ -62,4 +80,9 @@ test("fromBlockfrostError accepts key-order agnostic payloads from nested respon
   const adapted = fromBlockfrostError(wrapped);
 
   assert.equal(adapted?.code, "RATE_LIMITED");
+});
+
+test("fromBlockfrostError returns null for non-http-like statuses", () => {
+  const redirect = fromBlockfrostError({ status_code: 301, error: "Moved", message: "redirect" });
+  assert.equal(redirect, null);
 });

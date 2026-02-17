@@ -86,8 +86,8 @@
 - [x] Phase committed.
 
 #### Phase 4: Tests + Example + Docs
-- Status: `Not Started`
-- [ ] Mapping branch unit tests complete.
+- Status: `In Progress`
+- [x] Mapping branch unit tests complete.
 - [ ] Integration adapter-order tests complete.
 - [ ] Example integration snippet complete.
 - [ ] README quickstart + mapping docs complete.
@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Phase 4 - Tests + Example + Docs`
-- Current task: `Build integration test/doc/example checklist from MVP structure`
+- Current task: `Complete integration adapter-order test structure from MVP plan`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -147,10 +147,16 @@
 - Reason: Mesh/provider wrappers can nest actionable payloads (for example `cause.response.data`) deep enough that direct adapter scans miss deterministic mappings.
 - Impact: Provider/wallet deterministic mappings now win before node-string heuristics on wrapped mixed-stack errors.
 
+- Date: 2026-02-17
+- Section: Phase 4 mapping branch tests
+- Decision: Expand adapter unit coverage to include explicit Blockfrost 400/403/404 branches, non-http status null behavior, wallet positive-code disambiguation (`1` sign vs submit by `info`), and unknown wallet combo fallback.
+- Reason: Ensure each deterministic mapping branch in MVP tables and known null-return branch is explicitly regression-tested.
+- Impact: Phase 4 mapping branch unit-test gate is now complete with broader branch-level confidence.
+
 ## Testing Notes
 - Last run: 2026-02-17
-- Result: Pass (16/16 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added mesh adapter unit tests for nested Blockfrost/wallet unwrap behavior and a default-order integration assertion that mesh unwrap mapping beats node-string fallback.
+- Result: Pass (20/20 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added branch tests for Blockfrost explicit 400/403/404, non-http status null behavior, and wallet positive-code disambiguation + unknown combo fallback.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.

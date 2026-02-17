@@ -46,3 +46,18 @@ test("fromWalletError returns null for non-wallet error shape", () => {
   const adapted = fromWalletError({ status_code: 402, error: "Payment Required", message: "Daily limit" });
   assert.equal(adapted, null);
 });
+
+test("fromWalletError disambiguates overlapping positive codes by info", () => {
+  const signRefused = fromWalletError({ code: 1, info: "ProofGeneration" });
+  const submitRefused = fromWalletError({ code: 1, info: "Refused" });
+
+  assert.equal(signRefused?.code, "WALLET_SIGN_PROOF_GENERATION");
+  assert.equal(signRefused?.source, "wallet_sign");
+  assert.equal(submitRefused?.code, "WALLET_SUBMIT_REFUSED");
+  assert.equal(submitRefused?.source, "wallet_submit");
+});
+
+test("fromWalletError returns null for unknown wallet code/info combination", () => {
+  const adapted = fromWalletError({ code: 9, info: "SomeFutureExtension" });
+  assert.equal(adapted, null);
+});
