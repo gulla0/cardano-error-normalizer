@@ -122,13 +122,20 @@
 - Reason: Preserve a stable contract now, while allowing adapters to be layered in later phases.
 - Impact: Phase 2/3 can add adapters without changing public API shape.
 
+- Date: 2026-02-17
+- Section: Fingerprint implementation compatibility
+- Decision: Replace `node:crypto` hashing with a deterministic pure-TypeScript FNV-1a-style hash.
+- Reason: Avoid TypeScript `ts(2307)` in environments without Node builtin type declarations.
+- Impact: Fingerprinting remains deterministic without runtime-specific imports.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (3/3 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; verified fallback validity, adapter ordering, and fingerprint determinism.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; verified fallback validity, adapter ordering, and fingerprint determinism after removing `node:crypto` import.
 
 ## Commit Log
-- Pending: commit for Phase 1 core types + normalizer + tests.
+- 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
+- Pending: commit for fingerprint compatibility fix (`src/utils/fingerprint.ts`).
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
