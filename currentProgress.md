@@ -14,23 +14,23 @@
 ## MVP Section Breakdown (Seed Checklist)
 
 ### 1) MVP Objective
-- [ ] Objective confirmed and implementation scope locked.
-- [ ] Out-of-scope items explicitly excluded from current work.
+- [x] Objective confirmed and implementation scope locked.
+- [x] Out-of-scope items explicitly excluded from current work.
 
 ### 2) Target Users and Primary Flows
-- [ ] Primary flow validated in API design (`normalize(err, ctx)` -> `CardanoAppError`).
-- [ ] User-facing error stability assumptions documented.
+- [x] Primary flow validated in API design (`normalize(err, ctx)` -> `CardanoAppError`).
+- [x] User-facing error stability assumptions documented.
 
 ### 3) MVP Technical Scope
 
 #### 3.1 Canonical Error Model
-- [ ] `ErrorSource`, `ErrorStage`, `ErrorSeverity` implemented.
-- [ ] `CardanoAppError` implemented with required fields.
-- [ ] `raw` payload preservation verified.
+- [x] `ErrorSource`, `ErrorStage`, `ErrorSeverity` implemented.
+- [x] `CardanoAppError` implemented with required fields.
+- [x] `raw` payload preservation verified.
 
 #### 3.2 MVP Error Code Set (v1)
-- [ ] v1 code list implemented in `src/codes.ts`.
-- [ ] No extra non-MVP codes introduced.
+- [x] v1 code list implemented in `src/codes.ts`.
+- [x] No extra non-MVP codes introduced.
 
 #### 3.3 Adapters Included in MVP
 - [ ] `fromWalletError` implemented.
@@ -49,8 +49,8 @@
 - [ ] Table-driven tests added for both mappings.
 
 #### 3.6 Public API (MVP)
-- [ ] `NormalizeContext` implemented.
-- [ ] `AdapterFn`, `Normalizer`, `createNormalizer` exported.
+- [x] `NormalizeContext` implemented.
+- [x] `AdapterFn`, `Normalizer`, `createNormalizer` exported.
 
 ### 4) Repository and Package Structure
 - [ ] `/src` structure matches plan.
@@ -60,12 +60,12 @@
 ### 5) Implementation Plan Status
 
 #### Phase 1: Core Types and Normalizer
-- Status: `Not Started`
-- [ ] Types and interfaces complete.
-- [ ] Ordered adapter execution + fallback complete.
-- [ ] Optional fingerprint support complete.
-- [ ] Phase tests passing.
-- [ ] Phase committed.
+- Status: `Completed`
+- [x] Types and interfaces complete.
+- [x] Ordered adapter execution + fallback complete.
+- [x] Optional fingerprint support complete.
+- [x] Phase tests passing.
+- [x] Phase committed.
 
 #### Phase 2: Wallet + Blockfrost Adapters
 - Status: `Not Started`
@@ -94,19 +94,19 @@
 - [ ] Release candidate ready (`v0.1.0`).
 
 ### 6) Acceptance Criteria Checklist
-- [ ] `normalize()` always returns valid `CardanoAppError`.
+- [x] `normalize()` always returns valid `CardanoAppError`.
 - [ ] Deterministic wallet and Blockfrost mappings pass.
 - [ ] Blockfrost `402` -> `QUOTA_EXCEEDED`.
 - [ ] Blockfrost `418` -> `FORBIDDEN` + `meta.blockfrostReason="auto_banned"`.
 - [ ] Mesh-wrapped errors unwrap before heuristic fallback.
 - [ ] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
 - [ ] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
-- [ ] Unknown shapes preserve `raw` and map to `UNKNOWN`.
+- [x] Unknown shapes preserve `raw` and map to `UNKNOWN`.
 - [ ] CI tests pass.
 
 ## Current Build Focus
-- Active section: `Phase 1 - Core Types and Normalizer`
-- Current task: `Not started`
+- Active section: `Phase 2 - Wallet + Blockfrost Adapters`
+- Current task: `Implement wallet and Blockfrost adapters with table-driven mappings`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -116,13 +116,19 @@
 - Reason: Keep build sequence and quality gates explicit.
 - Impact: Every phase now has a test-and-commit gate before moving forward.
 
+- Date: 2026-02-17
+- Section: Phase 1 core architecture
+- Decision: Keep normalizer adapter-driven with strict fallback finalization and optional deterministic fingerprinting.
+- Reason: Preserve a stable contract now, while allowing adapters to be layered in later phases.
+- Impact: Phase 2/3 can add adapters without changing public API shape.
+
 ## Testing Notes
-- Last run: Not yet recorded
-- Result: Pending
-- Notes: Record command(s), failures, fixes, and final pass signal for each section.
+- Last run: 2026-02-17
+- Result: Pass (3/3 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; verified fallback validity, adapter ordering, and fingerprint determinism.
 
 ## Commit Log
-- No commits logged yet for MVP execution.
+- Pending: commit for Phase 1 core types + normalizer + tests.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
@@ -130,4 +136,3 @@
 - [ ] Run relevant tests until passing.
 - [ ] Update this file.
 - [ ] Commit.
-
