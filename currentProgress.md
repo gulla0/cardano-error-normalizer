@@ -55,7 +55,7 @@
 
 ### 4) Repository and Package Structure
 - [x] `/src` structure matches plan.
-- [ ] `/test` fixture and test file structure matches plan.
+- [x] `/test` fixture and test file structure matches plan.
 - [ ] `/examples/mesh-blockfrost-eternl.ts` added.
 
 ### 5) Implementation Plan Status
@@ -88,10 +88,10 @@
 #### Phase 4: Tests + Example + Docs
 - Status: `In Progress`
 - [x] Mapping branch unit tests complete.
-- [ ] Integration adapter-order tests complete.
+- [x] Integration adapter-order tests complete.
 - [ ] Example integration snippet complete.
 - [ ] README quickstart + mapping docs complete.
-- [ ] Full test suite passing.
+- [x] Full test suite passing.
 - [ ] Release candidate ready (`v0.1.0`).
 
 ### 6) Acceptance Criteria Checklist
@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Phase 4 - Tests + Example + Docs`
-- Current task: `Complete integration adapter-order test structure from MVP plan`
+- Current task: `Create /examples/mesh-blockfrost-eternl.ts integration snippet`
 - Blockers: `None logged`
 
 ## Decisions Log
@@ -153,10 +153,16 @@
 - Reason: Ensure each deterministic mapping branch in MVP tables and known null-return branch is explicitly regression-tested.
 - Impact: Phase 4 mapping branch unit-test gate is now complete with broader branch-level confidence.
 
+- Date: 2026-02-17
+- Section: Phase 4 integration adapter-order tests
+- Decision: Split adapter-order checks into dedicated `test/normalizer.integration.test.ts` and add an ambiguous payload precedence test confirming wallet mapping wins before Blockfrost in default adapter order.
+- Reason: Align `/test` structure with MVP plan while asserting runtime adapter precedence against mixed-shape payloads.
+- Impact: Integration test gate for adapter ordering is now explicitly covered and passing in the full suite.
+
 ## Testing Notes
 - Last run: 2026-02-17
-- Result: Pass (20/20 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added branch tests for Blockfrost explicit 400/403/404, non-http status null behavior, and wallet positive-code disambiguation + unknown combo fallback.
+- Result: Pass (21/21 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; integration adapter-order tests now live in `test/normalizer.integration.test.ts`, including mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
