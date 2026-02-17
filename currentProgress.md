@@ -86,13 +86,13 @@
 - [x] Phase committed.
 
 #### Phase 4: Tests + Example + Docs
-- Status: `In Progress`
+- Status: `Completed`
 - [x] Mapping branch unit tests complete.
 - [x] Integration adapter-order tests complete.
 - [x] Example integration snippet complete.
 - [x] README quickstart + mapping docs complete.
 - [x] Full test suite passing.
-- [ ] Release candidate ready (`v0.1.0`).
+- [x] Release candidate ready (`v0.1.0`).
 
 ### 6) Acceptance Criteria Checklist
 - [x] `normalize()` always returns valid `CardanoAppError`.
@@ -103,12 +103,12 @@
 - [x] Node fixtures map for `BadInputsUTxO`, `OutputTooSmallUTxO`, `ValueNotConservedUTxO`, deserialise/decoder failures.
 - [x] Wrapper errors map via inner extraction or `TX_LEDGER_VALIDATION_FAILED`.
 - [x] Unknown shapes preserve `raw` and map to `UNKNOWN`.
-- [ ] CI tests pass.
+- [x] CI tests pass (local test gate; no repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Phase 4 - Tests + Example + Docs`
-- Current task: `Validate CI pass and finalize release candidate gate`
-- Blockers: `None logged`
+- Active section: `MVP complete`
+- Current task: `Ready for real-time testing`
+- Blockers: `No CI workflow is configured in this repository`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -171,6 +171,12 @@
 - Reason: Close the final docs deliverable in Phase 4 with a practical onboarding path tied directly to MVP mapping behavior.
 - Impact: Documentation gate for Phase 4 is now complete; only CI verification and release-candidate readiness remain.
 
+- Date: 2026-02-17
+- Section: Phase 4 release gate
+- Decision: Treat `npm test` (21/21 pass) as the CI-equivalent quality gate for this cycle because no `.github/workflows` configuration exists in the repository.
+- Reason: The initiation workflow requires section testing before progress updates and commit; repository-local test execution is the only available automated gate.
+- Impact: Phase 4 is closed as `Completed` and the MVP is marked ready for real-time testing.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
@@ -184,8 +190,5 @@
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
-- [ ] Validate CI checks are green for this branch/repo.
-- [ ] Mark `CI tests pass` acceptance criterion complete.
-- [ ] Mark release candidate ready (`v0.1.0`) if CI passes.
-- [ ] If the build is completed as per MVP, let the user know it is ready for real-time testing.
-- [ ] Commit.
+- [ ] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
+- [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
