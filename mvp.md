@@ -70,6 +70,7 @@ Start with a constrained, actionable subset:
 - `NETWORK_UNREACHABLE`
 - `TIMEOUT`
 - `RATE_LIMITED`
+- `QUOTA_EXCEEDED`
 - `UNAUTHORIZED`
 - `FORBIDDEN`
 - `NOT_FOUND`
@@ -99,11 +100,11 @@ Implement these adapters first:
 3. `fromNodeStringError` (regex matching for submit-api/CLI/node text)
 4. `fromMeshError` (unwrap nested provider/wallet errors; fallback generic mapping)
 
-Adapter order in default normalizer:
-1. Wallet
-2. Blockfrost
-3. Node string heuristics
-4. Mesh wrapper
+Adapter order in default normalizer (unwrap-first):
+1. Mesh unwrap adapter (extract nested inner error and re-run adapter chain)
+2. Wallet
+3. Blockfrost
+4. Node string heuristics
 5. Fallback (`UNKNOWN`)
 
 ### 3.4 Heuristic Rules (MVP)
@@ -114,6 +115,12 @@ Regex-to-code mappings:
 - `/ValueNotConservedUTxO/i` -> `TX_VALUE_NOT_CONSERVED`
 - `/ScriptFailure|PlutusFailure|EvaluationFailure|ValidationTagMismatch|redeemer.*execution units/i` -> `TX_SCRIPT_EVALUATION_FAILED`
 - `/ShelleyTxValidationError|ApplyTxError/i` -> wrapper only; extract inner failure tag first, else `TX_LEDGER_VALIDATION_FAILED`
+
+Blockfrost status mappings (MVP):
+- `402` -> `QUOTA_EXCEEDED` (daily request limit exceeded)
+- `418` -> `RATE_LIMITED` (auto-ban after flooding)
+- `425` -> `MEMPOOL_FULL`
+- `429` -> `RATE_LIMITED`
 
 ### 3.5 Public API (MVP)
 ```ts
@@ -176,7 +183,7 @@ Deliverable:
 
 ### Phase 2: Wallet + Blockfrost Adapters (Day 1-2)
 - Implement deterministic CIP-30 code mapping plus explicit handling of known CIP-95 extensions (e.g., `DeprecatedCertificate`).
-- Implement Blockfrost body parser and status-to-code mapping using required keys only (key order agnostic).
+- Implement Blockfrost body parser and status-to-code mapping using required keys only (key order agnostic), including explicit `402` quota handling.
 - Preserve full `raw` payload and include parsed fields in `meta`.
 
 Deliverable:
@@ -184,7 +191,7 @@ Deliverable:
 
 ### Phase 3: Node String Heuristics + Mesh Wrapper (Day 2)
 - Implement regex-based node/string adapter.
-- Implement Mesh adapter that inspects wrapped error cause/response fields and delegates.
+- Implement Mesh adapter as unwrap-first: inspect wrapped error cause/response fields, extract inner errors, and delegate back through wallet/blockfrost/node adapters before final fallback.
 - Add clear fallback behavior when no structured shape is detected.
 
 Deliverable:
@@ -203,7 +210,9 @@ Deliverable:
 - `normalize()` always returns a valid `CardanoAppError`.
 - 100% deterministic mapping for:
   - CIP-30 wallet error codes, plus explicit handling for known CIP-95 extensions (e.g., `DeprecatedCertificate`).
-  - Blockfrost HTTP statuses in MVP scope (403/404/418/425/429/5xx/4xx fallback), with payload parsing that is key-order agnostic.
+  - Blockfrost HTTP statuses in MVP scope (402/403/404/418/425/429/5xx/4xx fallback), with payload parsing that is key-order agnostic.
+- Blockfrost `402` is mapped explicitly to `QUOTA_EXCEEDED` (not folded into generic `BAD_REQUEST`).
+- Mesh-wrapped errors are unwrapped before heuristic matching so provider/wallet-specific mappings win over node-string fallback.
 - Node string adapter correctly maps fixture errors for:
   - `BadInputsUTxO`
   - `OutputTooSmallUTxO`
