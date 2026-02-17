@@ -107,8 +107,8 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Add CHANGELOG.md entry for taxonomy v1 and known limitations`
-- Blockers: `None`
+- Current task: `Human Task 2 - collect real-world Mesh + Blockfrost + Eternl error payload samples`
+- Blockers: `Waiting on Human Task 2 payload artifacts`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -195,10 +195,16 @@
 - Reason: Prevent accidental commits of secrets and generated/local files during post-MVP hardening.
 - Impact: Git status now stays focused on meaningful source/documentation changes.
 
+- Date: 2026-02-17
+- Section: Post-MVP changelog documentation
+- Decision: Add root `CHANGELOG.md` with `0.1.0` entry including taxonomy v1 and explicitly stated MVP known limitations.
+- Reason: Close the remaining agent-owned post-MVP documentation deliverable and provide a stable release-history anchor before human-gated real-world fixture expansion.
+- Impact: MVP definition-of-done changelog requirement is now satisfied and release discussion can reference a concrete taxonomy snapshot.
+
 ## Testing Notes
 - Last run: 2026-02-17
 - Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after publish-readiness metadata updates (`package.json`/lock, license file, README install/import package path); integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding `CHANGELOG.md` for taxonomy v1 and known limitations; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -207,13 +213,14 @@
 - 2026-02-17: `c475253` - Add node string heuristic adapter and fixture-backed tests.
 - 2026-02-17: `b408847` - Add GitHub Actions CI workflow for npm test.
 - 2026-02-17: `970a4f5` - Prepare package publish metadata for public ESM release.
-- 2026-02-17: `pending` - Add repository `.gitignore` and sync progress tracking.
+- 2026-02-17: `8df3a17` - Add project `.gitignore` and update progress log.
+- 2026-02-17: `pending` - Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
 - [x] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
-- [ ] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
+- [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
 - [ ] Add regression fixtures/tests for any newly observed real-world errors.
 
