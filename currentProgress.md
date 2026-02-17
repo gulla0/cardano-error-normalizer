@@ -10,6 +10,7 @@
 - Iterate logic until tests pass.
 - Update this file before each commit.
 - Keep decisions and scope changes logged.
+- If the build is completed as per MVP, let the user know it is ready for real-time testing.
 
 ## MVP Section Breakdown (Seed Checklist)
 
@@ -156,4 +157,5 @@
 - [ ] Implement next unchecked item in active phase.
 - [ ] Run relevant tests until passing.
 - [ ] Update this file.
+- [ ] If the build is completed as per MVP, let the user know it is ready for real-time testing.
 - [ ] Commit.
