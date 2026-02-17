@@ -74,7 +74,7 @@
 - [x] Blockfrost parser and mappings complete.
 - [x] `raw` + `meta` preservation complete.
 - [x] Phase tests passing.
-- [ ] Phase committed.
+- [x] Phase committed.
 
 #### Phase 3: Node Heuristics + Mesh Wrapper
 - Status: `Not Started`
@@ -96,6 +96,7 @@
 ### 6) Acceptance Criteria Checklist
 - [x] `normalize()` always returns valid `CardanoAppError`.
 - [ ] Deterministic wallet and Blockfrost mappings pass.
+- [x] Deterministic wallet and Blockfrost mappings pass.
 - [x] Blockfrost `402` -> `QUOTA_EXCEEDED`.
 - [x] Blockfrost `418` -> `FORBIDDEN` + `meta.blockfrostReason="auto_banned"`.
 - [ ] Mesh-wrapped errors unwrap before heuristic fallback.
@@ -141,7 +142,7 @@
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
-- Pending: commit for Phase 2 wallet + Blockfrost adapters and mapping tests.
+- 2026-02-17: `7645082` - Implement Phase 2 wallet + Blockfrost adapters and table-driven mapping tests.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
