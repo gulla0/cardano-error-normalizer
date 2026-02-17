@@ -149,6 +149,7 @@
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
 - 2026-02-17: `7645082` - Implement Phase 2 wallet + Blockfrost adapters and table-driven mapping tests.
 - 2026-02-17: `1778390` - Update progress log after Phase 2 commit.
+- 2026-02-17: `c475253` - Add node string heuristic adapter and fixture-backed tests.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
