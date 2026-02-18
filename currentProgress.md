@@ -107,8 +107,8 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Agent Task - publish blocker remediation completed; awaiting final human publish approval`
-- Blockers: `none (technical blockers resolved); pending human go/no-go for final npm package scope`
+- Current task: `Agent Task - final package scope applied and publish gates re-validation`
+- Blockers: `none`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -219,6 +219,12 @@
 - Reason: Resolve all technical blockers identified in Human Task 3 while preserving ESM-only packaging and existing runtime behavior.
 - Impact: Publish gates now pass (`npm run typecheck`, `npm test`, `npm pack --dry-run`), and package tarball contains only expected release files + built artifacts.
 
+- Date: 2026-02-18
+- Section: Final npm package scope confirmation
+- Decision: Apply human-confirmed publish identity `@gulla0/cardano-error-normalizer` in package metadata and README install/import examples.
+- Reason: Human provided the final npm org/user scope required by Task 3 blocker resolution.
+- Impact: Package identity is now final and aligned across metadata/docs for publish.
+
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm run typecheck`, `npm test` 23/23, `npm run build`, `npm pack --dry-run`)
@@ -259,7 +265,7 @@ Task 1 (human):
   - whether dual ESM/CJS is required
 - Status: `Completed`
 - Received:
-  - `npmPackageName`: `@<your-npm-scope>/cardano-error-normalizer` (placeholder pattern; converted to valid scaffold value `@your-npm-scope/cardano-error-normalizer` in package metadata until final scope is provided)
+  - `npmPackageName`: `@gulla0/cardano-error-normalizer` (final scope confirmed on 2026-02-18; package metadata/docs updated accordingly)
   - `access`: `public`
   - `node`: `>=18`
   - `typescript`: `>=5.2`
