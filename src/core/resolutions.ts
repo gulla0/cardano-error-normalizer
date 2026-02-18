@@ -130,6 +130,34 @@ const RESOLUTIONS_BY_CODE: Readonly<Partial<Record<CardanoErrorCode, ErrorResolu
       "Retry signing with latest wallet/session state"
     ]
   },
+  WALLET_DATA_SIGN_PROOF_GENERATION: {
+    title: "Retry data signing with a supported payload",
+    steps: [
+      "Confirm payload encoding and address format are valid",
+      "Retry signData after refreshing wallet/session state"
+    ]
+  },
+  WALLET_DATA_SIGN_ADDRESS_NOT_PK: {
+    title: "Use a payment-key address for signData",
+    steps: [
+      "Call signData with a base, enterprise, or pointer address",
+      "Avoid reward/script addresses that do not expose a payment key"
+    ]
+  },
+  WALLET_DATA_SIGN_USER_DECLINED: {
+    title: "Ask user to re-approve data signing",
+    steps: [
+      "Explain why the message signature is needed",
+      "Prompt signData again when the user is ready"
+    ]
+  },
+  WALLET_PAGINATION_OUT_OF_RANGE: {
+    title: "Adjust wallet pagination bounds",
+    steps: [
+      "Request fewer pages or use a lower page index",
+      "Respect the wallet-provided maxSize limit"
+    ]
+  },
   WALLET_SUBMIT_REFUSED: {
     title: "Resolve submit refusal",
     steps: [
@@ -201,4 +229,3 @@ export function getResolutionForCode(
     steps: [...resolution.steps]
   };
 }
-

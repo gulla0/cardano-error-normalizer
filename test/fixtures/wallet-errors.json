@@ -6,6 +6,17 @@
   { "label": "TxSign_ProofGeneration", "err": { "code": 1, "info": "ProofGeneration" } },
   { "label": "TxSign_UserDeclined", "err": { "code": 2, "info": "UserDeclined" } },
   { "label": "TxSign_DeprecatedCert", "err": { "code": 3, "info": "DeprecatedCertificate" } },
+  { "label": "DataSign_ProofGeneration", "err": { "name": "DataSignError", "code": 1, "info": "ProofGeneration" } },
+  {
+    "label": "DataSign_AddressNotPK",
+    "err": {
+      "name": "DataSignError",
+      "code": 2,
+      "info": "Address was not a P2PK address and thus had no SK associated with it."
+    }
+  },
+  { "label": "DataSign_UserDeclined", "err": { "name": "DataSignError", "code": 3, "info": "UserDeclined" } },
+  { "label": "Paginate_OutOfRange", "err": { "maxSize": 100 } },
   { "label": "TxSend_Refused", "err": { "code": 1, "info": "Refused" } },
   { "label": "TxSend_Failure", "err": { "code": 2, "info": "Failure" } }
 ]

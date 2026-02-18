@@ -107,10 +107,17 @@
 
 ## Current Build Focus
 - Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Execution checklist #5 pending: taxonomy + wallet adapter updates (DataSign/Paginate/CIP-95 metadata); checklist #4 meta inference completed`
+- Current task: `Execution checklist #6 pending: fixture-driven verification sets and regression locking; checklist #5 taxonomy + wallet adapter updates completed`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification remediation execution checklist #5 (taxonomy + wallet adapter updates)
+- Decision: Add required taxonomy codes in `src/codes.ts` (`WALLET_DATA_SIGN_PROOF_GENERATION`, `WALLET_DATA_SIGN_ADDRESS_NOT_PK`, `WALLET_DATA_SIGN_USER_DECLINED`, `WALLET_PAGINATION_OUT_OF_RANGE`), extend `fromWalletError` with DataSign family detection and Paginate `{maxSize}` handling, and annotate CIP-95 `DeprecatedCertificate` mappings with `meta.cip95DeprecatedCertificate=true`.
+- Reason: Close the next verification checklist section with spec-aligned wallet-family coverage and explicit CIP-95 provenance metadata while preserving existing TxSign/TxSend behavior.
+- Impact: Wallet normalization now handles DataSign and Paginate failures with dedicated internal codes, keeps CIP-95 classification explicit in metadata, and preserves deterministic mapping behavior for legacy fixtures.
+- Test evidence: `npm test` -> `61/61` passing (expanded wallet fixture rows + disambiguation assertions), `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: Verification remediation execution checklist #4 (meta inference enrichment)
 - Decision: Add `src/core/analyzers.ts` with `inferErrorMeta(err)` heuristics for key-based Blockfrost detection (`status_code` in nested shapes), CIP numeric wallet detection (`code` + `info`), and node ledger-pattern strings; update `normalizeError` to merge metadata as `meta: { ...core.meta, ...heur }` while preserving explicit caller provenance for `source`/`stage`.
@@ -358,7 +365,7 @@
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm test` 61/61, `npm run typecheck`)
-- Notes: Added analyzer tests at `test/core.analyzers.test.ts` and `normalizeError` merge/provenance coverage in `test/normalizer.phase1.test.ts`.
+- Notes: Added wallet taxonomy regression coverage for DataSign/Paginate/CIP-95 metadata in `test/adapters.wallet.test.ts` and `test/fixtures/wallet-errors.json`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -396,7 +403,7 @@
 - [x] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
 - [x] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
 - [ ] Execute verification remediation checklist in `verification-followup-instructions.md`.
-- [ ] Implement missing wallet families from verification report (`DataSignError`, `PaginateError`) and add required taxonomy codes.
+- [x] Implement missing wallet families from verification report (`DataSignError`, `PaginateError`) and add required taxonomy codes.
 - [x] Align preset separation and naming (`meshProviderPreset` vs `cip30WalletPreset`) per verification report.
 - [x] Add/extend `inferErrorMeta` and enforce meta-only enrichment merge behavior.
 - [ ] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
