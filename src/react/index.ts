@@ -108,7 +108,36 @@ function resolveContext<TArgs extends unknown[]>(
 }
 
 function defaultHookBindings(): HookBindings {
+  const reactBindings = resolveReactBindingsFromRuntime();
+  if (reactBindings) {
+    return reactBindings;
+  }
+
   throw new Error(
-    "React bindings are required in this environment. Pass config.hooks with useState/useCallback."
+    "React runtime hooks are unavailable. Install `react` and call this hook inside a React component, or pass config.hooks for custom runtimes."
   );
+}
+
+type RuntimeUseState = HookBindings["useState"];
+type RuntimeUseCallback = HookBindings["useCallback"];
+type RuntimeReactLike = {
+  useState?: RuntimeUseState;
+  useCallback?: RuntimeUseCallback;
+};
+
+function resolveReactBindingsFromRuntime(): HookBindings | null {
+  const candidate = globalThis as { React?: RuntimeReactLike };
+  const runtimeReact = candidate.React;
+  if (
+    runtimeReact &&
+    typeof runtimeReact.useState === "function" &&
+    typeof runtimeReact.useCallback === "function"
+  ) {
+    return {
+      useState: runtimeReact.useState,
+      useCallback: runtimeReact.useCallback
+    };
+  }
+
+  return null;
 }

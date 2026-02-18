@@ -5,7 +5,8 @@ import { createUseCardanoOp, executeWithSafety, useCardanoError } from "../src/r
 import type { HookBindings, UseCardanoOpResult } from "../src/react/index.ts";
 
 function createHookHarness<TArgs extends unknown[], TData>(
-  operation: (...args: TArgs) => Promise<TData>
+  operation: (...args: TArgs) => Promise<TData>,
+  useConfigHooks = true
 ): {
   render: () => UseCardanoOpResult<TArgs, TData>;
 } {
@@ -38,6 +39,12 @@ function createHookHarness<TArgs extends unknown[], TData>(
   return {
     render() {
       cursor = 0;
+      const config = useConfigHooks
+        ? {
+            hooks: bindings
+          }
+        : undefined;
+
       return useCardanoError({
         operation,
         defaults: {
@@ -45,9 +52,7 @@ function createHookHarness<TArgs extends unknown[], TData>(
           stage: "submit",
           provider: "blockfrost"
         },
-        config: {
-          hooks: bindings
-        }
+        config
       });
     }
   };
@@ -72,6 +77,63 @@ test("useCardanoError drives hook state using defaults/config API", async () => 
   assert.equal(hook.loading, false);
   assert.equal(hook.data, "ok:abc");
   assert.equal(hook.error, undefined);
+});
+
+test("useCardanoError resolves hook bindings from runtime React when config.hooks is omitted", async () => {
+  const runtime = globalThis as unknown as {
+    React?: HookBindings;
+  };
+
+  const slots: unknown[] = [];
+  let cursor = 0;
+  runtime.React = {
+    useState<T>(initial: T) {
+      const index = cursor++;
+      if (!(index in slots)) {
+        slots[index] = initial;
+      }
+
+      const setState = (value: T | ((prev: T) => T)) => {
+        const prev = slots[index] as T;
+        slots[index] = typeof value === "function" ? (value as (p: T) => T)(prev) : value;
+      };
+
+      return [slots[index] as T, setState];
+    },
+    useCallback<T extends (...args: any[]) => unknown>(callback: T): T {
+      cursor++;
+      return callback;
+    }
+  };
+
+  try {
+    const render = () => {
+      cursor = 0;
+      return useCardanoError({
+        operation: async (tx: string) => `ok:${tx}`,
+        defaults: {
+          source: "provider_submit",
+          stage: "submit",
+          provider: "blockfrost"
+        }
+      });
+    };
+
+    let hook = render();
+    const pending = hook.run("abc");
+    hook = render();
+    assert.equal(hook.loading, true);
+
+    const result = await pending;
+    assert.equal(result, "ok:abc");
+
+    hook = render();
+    assert.equal(hook.loading, false);
+    assert.equal(hook.data, "ok:abc");
+    assert.equal(hook.error, undefined);
+  } finally {
+    delete runtime.React;
+  }
 });
 
 test("react index re-exports createUseCardanoOp for compatibility", () => {

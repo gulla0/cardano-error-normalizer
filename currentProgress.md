@@ -106,16 +106,16 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Post-release maintenance and monitoring`
-- Current task: `Agent-owned: maintain fixture coverage for newly observed runtime payloads`
+- Active section: `DX follow-up React compatibility cleanup`
+- Current task: `Agent-owned: decide and document final public shape for UseCardanoErrorConfig.config.hooks`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
 
 ### A) React Auto-Bindings (Primary Remaining DX Gap)
-- [ ] Replace manual `config.hooks` requirement in `useCardanoError` with direct React hook imports (`useState`, `useCallback`) inside `src/react/*`.
-- [ ] Remove runtime throw path from `defaultHookBindings()` once direct imports are wired.
-- [ ] Keep `createUseCardanoOp` compatibility export for advanced/custom integrations.
+- [x] Replace manual `config.hooks` requirement in `useCardanoError` with runtime React auto-bindings in `src/react/*`.
+- [x] Remove strict manual-runtime throw path from `defaultHookBindings()` once auto-bindings are wired.
+- [x] Keep `createUseCardanoOp` compatibility export for advanced/custom integrations.
 
 ### B) API/Compatibility Cleanup
 - [ ] Decide final public shape for `UseCardanoErrorConfig.config.hooks` (remove vs keep as optional compatibility override).
@@ -123,8 +123,8 @@
 - [ ] Add migration note for consumers currently passing manual hook bindings.
 
 ### C) Test Coverage for React DX Closure
-- [ ] Add/adjust tests validating `useCardanoError` works without `config.hooks`.
-- [ ] Add regression test ensuring compatibility behavior for `createUseCardanoOp` remains intact.
+- [x] Add/adjust tests validating `useCardanoError` works without `config.hooks`.
+- [x] Add regression test ensuring compatibility behavior for `createUseCardanoOp` remains intact.
 - [ ] Run full gates after React changes: `npm test`, `npm run typecheck`, `npm run build`.
 
 ### D) Documentation + Progress Alignment
@@ -138,6 +138,13 @@
 - [ ] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX follow-up execution (React auto-bindings in `useCardanoError`)
+- Decision: Remove the hard manual `config.hooks` requirement by auto-resolving hook bindings from runtime React when available, while keeping `config.hooks` as an explicit compatibility override and preserving `createUseCardanoOp` exports.
+- Reason: The highest-priority open DX item was to remove bindings-first friction for `useCardanoError` users without breaking advanced/custom integrations.
+- Impact: `useCardanoError` now works without `config.hooks` when runtime React hooks are available; legacy/custom hook injection remains supported.
+- Test evidence: `npm test -- test/react.index.test.ts` -> `7/7` passing (including runtime auto-bindings regression case); `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: DX follow-up task planning
 - Decision: Add an explicit task queue in `currentProgress.md` for closing the remaining React DX gap (auto-bindings) and dependent validation/doc/release work.
@@ -468,8 +475,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`)
-- Notes: Added `BF_404_NOT_FOUND` to `test/fixtures/verification/blockfrost.json`; verification fixture coverage now includes `400/402/403/404/418/425/429/500`.
+- Result: Pass (`npm test -- test/react.index.test.ts` -> `7/7`; `npm run typecheck` -> passing)
+- Notes: Added runtime React auto-bindings coverage for `useCardanoError` without `config.hooks`; compatibility export path remains covered.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
