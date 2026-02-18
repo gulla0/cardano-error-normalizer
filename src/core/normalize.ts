@@ -1,6 +1,12 @@
 import type { CardanoErrorCode } from "../codes.ts";
 import { createNormalizer } from "../normalizer.ts";
-import type { CardanoAppError, NormalizeContext, Normalizer, NormalizerConfig } from "../types.ts";
+import type {
+  CardanoAppError,
+  NormalizeConfig,
+  NormalizeContext,
+  Normalizer,
+  NormalizerConfig
+} from "../types.ts";
 import { extractErrorMessage } from "../utils/guards.ts";
 import { getResolutionForCode } from "./resolutions.ts";
 
@@ -40,26 +46,37 @@ const MESSAGE_MATCHERS: MessageMatcher[] = [
 ];
 
 export function createSmartNormalizer(
-  config?: Partial<NormalizerConfig>
+  options?: { config?: NormalizerConfig; defaults?: Partial<NormalizeContext> } | NormalizerConfig
 ): Normalizer {
-  const baseNormalizer = createNormalizer(config);
+  const normalizedOptions = normalizeSmartOptions(options);
+  const baseNormalizer = createNormalizer(normalizedOptions);
 
   return {
-    normalize(err: unknown, ctx: NormalizeContext): CardanoAppError {
+    normalize(err: unknown, ctx?: Partial<NormalizeContext>): CardanoAppError {
       let normalized = baseNormalizer.normalize(err, ctx);
 
       normalized = applyMessageMatcher(normalized, err);
       normalized = attachResolution(normalized);
 
-      if (config?.parseTraces) {
+      if (normalizedOptions.config?.parseTraces) {
         normalized = attachTraceMeta(normalized, err);
       }
 
-      if (config?.debug) {
+      if (normalizedOptions.config?.debug) {
         debugNormalize(err, ctx, normalized);
       }
 
       return normalized;
+    },
+
+    withDefaults(moreDefaults: Partial<NormalizeContext>): Normalizer {
+      return createSmartNormalizer({
+        config: normalizedOptions.config,
+        defaults: {
+          ...(normalizedOptions.defaults ?? {}),
+          ...moreDefaults
+        }
+      });
     }
   };
 }
@@ -175,7 +192,7 @@ function appendTraceValue(target: string[], value: unknown): void {
 
 function debugNormalize(
   err: unknown,
-  ctx: NormalizeContext,
+  ctx: Partial<NormalizeContext> | undefined,
   normalized: CardanoAppError
 ): void {
   try {
@@ -194,4 +211,24 @@ function debugNormalize(
   } catch {
     // Debug logging must never break normalization.
   }
+}
+
+function normalizeSmartOptions(
+  options?: { config?: NormalizerConfig; defaults?: Partial<NormalizeContext> } | NormalizeConfig
+): { config?: NormalizerConfig; defaults?: Partial<NormalizeContext> } {
+  if (options === undefined) {
+    return {};
+  }
+
+  if (isSmartOptions(options)) {
+    return options;
+  }
+
+  return { config: options };
+}
+
+function isSmartOptions(
+  options: { config?: NormalizerConfig; defaults?: Partial<NormalizeContext> } | NormalizeConfig
+): options is { config?: NormalizerConfig; defaults?: Partial<NormalizeContext> } {
+  return "config" in options || "defaults" in options;
 }

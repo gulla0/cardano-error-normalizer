@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { createNormalizer } from "../src/normalizer.ts";
+import { normalizeError } from "../src/config/errors.ts";
 
 test("normalize fallback returns valid CardanoAppError with preserved raw", () => {
   const normalizer = createNormalizer();
@@ -114,4 +115,57 @@ test("normalizer preserves adapter resolution details when provided", () => {
     "Retry the action"
   ]);
   assert.equal(result.resolution?.docsUrl, "https://example.com/docs/wallet-refused");
+});
+
+test("createNormalizer supports scoped defaults and override context merging", () => {
+  const normalizer = createNormalizer({
+    defaults: {
+      source: "provider_query",
+      stage: "build",
+      provider: "blockfrost",
+      network: "preprod"
+    }
+  });
+
+  const fromDefaults = normalizer.normalize(new Error("timeout"));
+  assert.equal(fromDefaults.source, "provider_query");
+  assert.equal(fromDefaults.stage, "build");
+  assert.equal(fromDefaults.provider, "blockfrost");
+  assert.equal(fromDefaults.network, "preprod");
+
+  const overridden = normalizer.normalize(new Error("timeout"), {
+    source: "provider_submit",
+    stage: "submit"
+  });
+  assert.equal(overridden.source, "provider_submit");
+  assert.equal(overridden.stage, "submit");
+  assert.equal(overridden.provider, "blockfrost");
+});
+
+test("withDefaults returns new instance without mutating parent defaults", () => {
+  const root = createNormalizer({
+    defaults: { source: "provider_query", stage: "build", provider: "blockfrost" }
+  });
+  const scoped = root.withDefaults({ provider: "koios", stage: "submit" });
+
+  const rootError = root.normalize(new Error("x"));
+  const scopedError = scoped.normalize(new Error("x"));
+
+  assert.equal(rootError.provider, "blockfrost");
+  assert.equal(rootError.stage, "build");
+  assert.equal(scopedError.provider, "koios");
+  assert.equal(scopedError.stage, "submit");
+});
+
+test("normalizeError accepts optional context and one-off config", () => {
+  const normalized = normalizeError(
+    new Error("Request timed out while submitting"),
+    { source: "provider_submit", stage: "submit" },
+    { includeFingerprint: true }
+  );
+
+  assert.equal(normalized.source, "provider_submit");
+  assert.equal(normalized.stage, "submit");
+  assert.equal(normalized.code, "TIMEOUT");
+  assert.match(normalized.fingerprint ?? "", /^[a-f0-9]{16}$/);
 });

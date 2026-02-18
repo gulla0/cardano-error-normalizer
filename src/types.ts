@@ -2,6 +2,7 @@ import type { CardanoErrorCode } from "./codes.ts";
 
 export type ErrorSource =
   | "mesh_build"
+  | "wallet_query"
   | "wallet_sign"
   | "wallet_submit"
   | "provider_query"
@@ -48,18 +49,21 @@ export interface NormalizeContext {
   timestamp?: string;
 }
 
+export interface NormalizeConfig {
+  adapters?: AdapterFn[];
+  includeFingerprint?: boolean;
+  debug?: boolean;
+  parseTraces?: boolean;
+}
+
 export type AdapterFn = (
   err: unknown,
   ctx: NormalizeContext
 ) => CardanoAppError | Partial<CardanoAppError> | null;
 
 export interface Normalizer {
-  normalize(err: unknown, ctx: NormalizeContext): CardanoAppError;
+  normalize(err: unknown, ctx?: Partial<NormalizeContext>): CardanoAppError;
+  withDefaults(moreDefaults: Partial<NormalizeContext>): Normalizer;
 }
 
-export interface NormalizerConfig {
-  adapters: AdapterFn[];
-  includeFingerprint: boolean;
-  debug: boolean;
-  parseTraces: boolean;
-}
+export type NormalizerConfig = NormalizeConfig;

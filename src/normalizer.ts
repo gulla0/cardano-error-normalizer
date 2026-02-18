@@ -1,6 +1,7 @@
 import type {
   AdapterFn,
   CardanoAppError,
+  NormalizeConfig,
   NormalizeContext,
   Normalizer,
   NormalizerConfig
@@ -12,24 +13,45 @@ import { fromWalletError } from "./adapters/wallet.ts";
 import { createErrorFingerprint } from "./utils/fingerprint.ts";
 import { extractErrorMessage } from "./utils/guards.ts";
 
-const DEFAULT_CONFIG: NormalizerConfig = {
+interface ResolvedNormalizerConfig {
+  adapters: AdapterFn[];
+  includeFingerprint: boolean;
+  debug: boolean;
+  parseTraces: boolean;
+}
+
+interface CreateNormalizerOptions {
+  config?: NormalizerConfig;
+  defaults?: Partial<NormalizeContext>;
+}
+
+const DEFAULT_CONFIG: ResolvedNormalizerConfig = {
   adapters: [fromMeshError, fromWalletError, fromBlockfrostError, fromNodeStringError],
   includeFingerprint: false,
   debug: false,
   parseTraces: false
 };
 
+const DEFAULT_CONTEXT: NormalizeContext = {
+  source: "provider_query",
+  stage: "build"
+};
+
 export function createNormalizer(
-  config?: Partial<NormalizerConfig>
+  options?: CreateNormalizerOptions | NormalizerConfig
 ): Normalizer {
-  const resolvedConfig: NormalizerConfig = {
+  const normalizedOptions = normalizeCreateOptions(options);
+  const resolvedConfig: ResolvedNormalizerConfig = {
     ...DEFAULT_CONFIG,
-    ...config,
-    adapters: config?.adapters ?? DEFAULT_CONFIG.adapters
+    ...normalizedOptions.config,
+    adapters: normalizedOptions.config?.adapters ?? DEFAULT_CONFIG.adapters
   };
+  const resolvedDefaults = normalizedOptions.defaults ?? {};
 
   return {
-    normalize(err: unknown, ctx: NormalizeContext): CardanoAppError {
+    normalize(err: unknown, overrideCtx?: Partial<NormalizeContext>): CardanoAppError {
+      const ctx = mergeContext(resolvedDefaults, overrideCtx);
+
       for (const adapter of resolvedConfig.adapters) {
         const adapted = runAdapter(adapter, err, ctx);
         if (adapted !== null) {
@@ -42,6 +64,16 @@ export function createNormalizer(
         message: extractErrorMessage(err),
         severity: "error"
       }, err, ctx, resolvedConfig);
+    },
+
+    withDefaults(moreDefaults: Partial<NormalizeContext>): Normalizer {
+      return createNormalizer({
+        config: resolvedConfig,
+        defaults: {
+          ...resolvedDefaults,
+          ...moreDefaults
+        }
+      });
     }
   };
 }
@@ -62,7 +94,7 @@ function finalizeError(
   candidate: Partial<CardanoAppError>,
   raw: unknown,
   ctx: NormalizeContext,
-  config: NormalizerConfig
+  config: ResolvedNormalizerConfig
 ): CardanoAppError {
   const output: CardanoAppError = {
     name: "CardanoAppError",
@@ -95,4 +127,39 @@ function finalizeError(
   }
 
   return output;
+}
+
+function normalizeCreateOptions(
+  options?: CreateNormalizerOptions | NormalizeConfig
+): CreateNormalizerOptions {
+  if (options === undefined) {
+    return {};
+  }
+
+  if (isCreateOptions(options)) {
+    return options;
+  }
+
+  return { config: options };
+}
+
+function isCreateOptions(
+  input: CreateNormalizerOptions | NormalizeConfig
+): input is CreateNormalizerOptions {
+  return "config" in input || "defaults" in input;
+}
+
+function mergeContext(
+  defaults: Partial<NormalizeContext>,
+  override?: Partial<NormalizeContext>
+): NormalizeContext {
+  return {
+    source: override?.source ?? defaults.source ?? DEFAULT_CONTEXT.source,
+    stage: override?.stage ?? defaults.stage ?? DEFAULT_CONTEXT.stage,
+    network: override?.network ?? defaults.network,
+    provider: override?.provider ?? defaults.provider,
+    walletHint: override?.walletHint ?? defaults.walletHint,
+    txHash: override?.txHash ?? defaults.txHash,
+    timestamp: override?.timestamp ?? defaults.timestamp
+  };
 }

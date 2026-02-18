@@ -13,7 +13,10 @@ npm install @gulla0/cardano-error-normalizer
 ```ts
 import { createNormalizer } from "@gulla0/cardano-error-normalizer";
 
-const normalizer = createNormalizer({ includeFingerprint: true });
+const normalizer = createNormalizer({
+  config: { includeFingerprint: true },
+  defaults: { source: "provider_submit", stage: "submit" }
+});
 
 try {
   // Simulated wrapped provider error from a Mesh + Blockfrost flow.
@@ -31,8 +34,6 @@ try {
   };
 } catch (err) {
   const normalized = normalizer.normalize(err, {
-    source: "provider_submit",
-    stage: "submit",
     network: "preprod",
     provider: "blockfrost",
     walletHint: "eternl"
@@ -202,7 +203,7 @@ npm run build
 
 ## Default Adapter Order
 
-`createNormalizer()` runs adapters in this order:
+`createNormalizer({ config })` runs adapters in this order:
 
 1. `fromMeshError` (unwrap nested errors first)
 2. `fromWalletError`

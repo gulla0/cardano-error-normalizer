@@ -5,6 +5,7 @@ export type {
   ErrorSeverity,
   ErrorSource,
   ErrorStage,
+  NormalizeConfig,
   NormalizeContext,
   Normalizer,
   NormalizerConfig

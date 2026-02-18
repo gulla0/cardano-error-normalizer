@@ -107,10 +107,17 @@
 
 ## Current Build Focus
 - Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Implement verification follow-ups tracked in verification-followup-instructions.md using Research Dump/verification-3rdParty-errors.md as source of truth`
+- Current task: `Execution checklist #1 pending: React hook DX update (bindingless API + peerDependencies); checklist #0 API shape normalization completed`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification remediation section 0 (API shape normalization)
+- Decision: Implement `createNormalizer({ config, defaults })`, add `Normalizer.withDefaults(moreDefaults)`, and update `normalizeError(raw, ctx?, config?)` to support scoped context defaults and per-call config without mutating singleton defaults. Backward compatibility for legacy `createNormalizer(config)` calls is preserved.
+- Reason: Verification follow-ups require strict separation of provenance (`NormalizeContext`) and behavior flags (`NormalizeConfig`) before moving to React DX and preset layers.
+- Impact: Call sites can now centralize default provenance per normalizer instance, fork scoped instances safely with `withDefaults`, and apply one-off normalization config through `normalizeError` while existing usage continues to pass.
+- Test evidence: `npm test` -> `52/52` passing.
+
 - Date: 2026-02-18
 - Section: Verification report remediation planning
 - Decision: Add a dedicated implementation guide at `verification-followup-instructions.md` and treat `Research Dump/verification-3rdParty-errors.md` as the verification source of truth for all follow-up changes.
