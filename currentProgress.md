@@ -538,8 +538,17 @@ Task 5 (human):
   - `npm ci`: passed
   - `npm run typecheck`: passed
   - `npm test`: passed (`68/68`)
-- Human next action:
-  - Commit and push updated files:
-    - `package.json`
-    - `package-lock.json`
-  - Re-run/observe GitHub Actions on the pushed commit.
+- Follow-up outcome:
+  - Commit pushed: `ddcce6e` (`Fix npm ci lockfile sync and mark react peer optional`).
+  - GitHub Actions status: `Passed` for the `test` workflow/job on commit `#7`.
+
+## Next Steps (Release Readiness)
+- Run publish gate one more time on latest `main`:
+  - `npm ci`
+  - `npm run typecheck`
+  - `npm test`
+  - `npm pack --dry-run`
+- If all green, publish package:
+  - `npm publish --access public`
+- After publish:
+  - Tag release in Git (`v0.2.0`) and verify install from npm registry.
