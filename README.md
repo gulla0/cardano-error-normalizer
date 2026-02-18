@@ -1,6 +1,8 @@
-# Cardano Error Normalizer (MVP)
+# Cardano Error Normalizer
 
 A small TypeScript library that normalizes heterogeneous Cardano stack errors into a stable `CardanoAppError` shape.
+
+Latest published version: `0.2.0` (2026-02-18).
 
 ## Install
 
@@ -253,6 +255,8 @@ npm run build
 | PaginateError | n/a (`maxSize`) | requested page exceeds range | `WALLET_PAGINATION_OUT_OF_RANGE` |
 | TxSendError | `1` | Refused | `WALLET_SUBMIT_REFUSED` |
 | TxSendError | `2` | Failure | `WALLET_SUBMIT_FAILURE` |
+
+Submit-path disambiguation note: `APIError` `code=-2` normally maps to `WALLET_INTERNAL`, but maps to `WALLET_SUBMIT_FAILURE` when submit intent is explicit (`source=wallet_submit` or `stage=submit`) or when `info` indicates `submitTx`.
 
 ## Blockfrost Mapping Table
 

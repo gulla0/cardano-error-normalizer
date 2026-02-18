@@ -106,11 +106,25 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Human-owned: run real-time stack validation using Mesh + Blockfrost + wallet connectors against live/staging flows`
+- Active section: `Post-publish documentation and verification closeout`
+- Current task: `Agent-owned: sync docs/progress with completed real-time validation and npm publish state`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Real-time stack verification completion (Mesh + Blockfrost + Eternl)
+- Decision: Accept live verification results as complete after confirming submit-path CIP-30 payload `{ code: -2, info: "unknown error submitTx" }` maps to `WALLET_SUBMIT_FAILURE`, sign decline `{ code: 2, info: "user declined sign tx" }` maps to `WALLET_SIGN_USER_DECLINED`, and provider query `400` maps to `BAD_REQUEST`.
+- Reason: Human-provided runtime payload evidence demonstrated expected normalized outputs in frontend flows.
+- Impact: Verification checklist is now complete and mapping behavior is validated against live stack outcomes beyond fixture-only tests.
+- Test evidence: Human runtime report marked `PASS` with expected/actual code parity for submit + sign and provider query confirmation.
+
+- Date: 2026-02-18
+- Section: npm publish execution (`@gulla0/cardano-error-normalizer@0.2.0`)
+- Decision: Publish from repository root using `NPM_CONFIG_CACHE=/tmp/.npm-cache npm publish --access public` to bypass local `~/.npm` cache permission issues.
+- Reason: Default npm cache path had root-owned files and blocked publish with `EPERM`.
+- Impact: Package is now live on npm (`npm view @gulla0/cardano-error-normalizer version` => `0.2.0`) and installable by consumers.
+- Test evidence: `npm run typecheck` pass, `npm test` pass (`68/68`), successful npm registry version lookup post-publish.
+
 - Date: 2026-02-18
 - Section: Real-time verification follow-up (wallet submit CIP-30 APIError disambiguation)
 - Decision: Treat wallet `APIError` `code=-2` as `WALLET_SUBMIT_FAILURE` when submit intent is explicit (`ctx.source="wallet_submit"` or `ctx.stage="submit"`) or when `info` indicates `submitTx`; preserve existing `WALLET_INTERNAL` mapping for non-submit contexts.
@@ -386,7 +400,7 @@
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm test` 68/68, `npm run typecheck`)
-- Notes: Added submit-context regression coverage for wallet `APIError` `code=-2` mapping to `WALLET_SUBMIT_FAILURE` (`test/adapters.wallet.test.ts`, `test/normalizer.integration.test.ts`).
+- Notes: Added submit-context regression coverage for wallet `APIError` `code=-2` mapping to `WALLET_SUBMIT_FAILURE` (`test/adapters.wallet.test.ts`, `test/normalizer.integration.test.ts`); live runtime verification also passed for submit/sign/provider-query flows.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -397,6 +411,7 @@
 - 2026-02-17: `970a4f5` - Prepare package publish metadata for public ESM release.
 - 2026-02-17: `8df3a17` - Add project `.gitignore` and update progress log.
 - 2026-02-17: `ee53fca` - Add `CHANGELOG.md` entry for taxonomy v1 and sync progress.
+- 2026-02-18: `ac2cccf` - Refine wallet `APIError -2` submit-context mapping and add regression coverage.
 
 ## Next
 - [x] Read `mvp.md` and this file at start of the next cycle.
@@ -409,7 +424,7 @@
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
 - [x] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
-- [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
+- [x] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
 - [x] Push repository to GitHub remote and verify Actions CI run on latest commit.
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
 - [x] Add `npm run typecheck` (no special hacks) and confirm pass.
@@ -423,13 +438,13 @@
 - [x] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
 - [x] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
 - [x] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
-- [ ] Execute verification remediation checklist in `verification-followup-instructions.md`.
+- [x] Execute verification remediation checklist in `verification-followup-instructions.md`.
 - [x] Implement missing wallet families from verification report (`DataSignError`, `PaginateError`) and add required taxonomy codes.
 - [x] Align preset separation and naming (`meshProviderPreset` vs `cip30WalletPreset`) per verification report.
 - [x] Add/extend `inferErrorMeta` and enforce meta-only enrichment merge behavior.
 - [x] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
-- [ ] Update README tables/examples for verification-aligned mappings and preset method names.
-- [ ] Run verification gate after implementation: `npm test`, `npm run typecheck`, `npm pack --dry-run`.
+- [x] Update README tables/examples for verification-aligned mappings and preset method names.
+- [x] Run verification gate after implementation: `npm test`, `npm run typecheck`, `npm pack --dry-run`.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:

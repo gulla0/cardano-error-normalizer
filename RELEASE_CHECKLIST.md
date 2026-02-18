@@ -39,12 +39,15 @@ npm version patch
 ## 4) Publish to npm
 
 ```bash
-npm publish --access public
+NPM_CONFIG_CACHE=/tmp/.npm-cache npm publish --access public
 ```
+
+If npm prompts for authentication or 2FA, complete the prompt in the same terminal session.
 
 ## 5) Post-publish verification
 
 ```bash
 npm view @gulla0/cardano-error-normalizer version
 npm view @gulla0/cardano-error-normalizer dist-tags
+npm i @gulla0/cardano-error-normalizer
 ```

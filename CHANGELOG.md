@@ -14,6 +14,8 @@ All notable changes to this project are documented in this file.
 - `withErrorSafety` now supports `normalizerConfig` and resolves precedence as explicit `normalizer` override, then per-wrapper smart config, then global default.
 - `./react` package export now points to `dist/react/index.*`, and React helper surface is consolidated behind `src/react/index.ts`.
 - README integration guidance now prefers direct `useCardanoError` subpath import and documents DX v2 debug/trace options and resolution-hint rendering.
+- Wallet `APIError` `code=-2` is now disambiguated to `WALLET_SUBMIT_FAILURE` for explicit submit intent (`wallet_submit`/`submit` context or `submitTx` info), while non-submit contexts remain `WALLET_INTERNAL`.
+- Verification run against live Mesh + Blockfrost + Eternl flows confirmed submit/sign mappings (`WALLET_SUBMIT_FAILURE`, `WALLET_SIGN_USER_DECLINED`) and Blockfrost `400` handling.
 
 ## [0.1.0] - 2026-02-17
 
@@ -35,4 +37,4 @@ All notable changes to this project are documented in this file.
 - Error taxonomy coverage is intentionally scoped to MVP mappings and heuristics; unknown or out-of-scope failures resolve to `UNKNOWN` with preserved `raw`.
 - String-based node classification may miss ledger-era/provider-specific variants not yet represented in fixtures.
 - Deterministic mappings currently focus on the Mesh + Blockfrost + Eternl target path.
-- Real-time integration fixture coverage depends on production payload samples that are still pending.
+- Real-time fixture coverage is still sample-driven; newly observed production payload variants should continue to be added as regression fixtures.
