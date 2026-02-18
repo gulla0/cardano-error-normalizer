@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Agent Task - final package scope applied and publish gates re-validation`
+- Current task: `GitHub publish handoff and remote push`
 - Blockers: `none`
 
 ## Decisions Log
@@ -225,6 +225,12 @@
 - Reason: Human provided the final npm org/user scope required by Task 3 blocker resolution.
 - Impact: Package identity is now final and aligned across metadata/docs for publish.
 
+- Date: 2026-02-18
+- Section: GitHub repository push readiness
+- Decision: Add explicit human + agent Task 4 for remote setup and first push/CI verification.
+- Reason: Repository has no configured git remote yet, so GitHub publication requires a human-owned remote selection step before agent push execution.
+- Impact: Push ownership and execution gates are now clear, with CI verification included as part of completion.
+
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm run typecheck`, `npm test` 23/23, `npm run build`, `npm pack --dry-run`)
@@ -246,6 +252,7 @@
 - [x] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
+- [ ] Push repository to GitHub remote and verify Actions CI run on latest commit.
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
 - [x] Add `npm run typecheck` (no special hacks) and confirm pass.
 - [x] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
@@ -298,3 +305,19 @@ Task 3 (human):
     - Remove absolute local paths from published docs (`test/fixtures/README.md`).
   - Changelog decision: `Approved with minor formatting edits requested` (heading spacing/newline polish and packaging/compatibility note; release date should match actual publish date).
   - Publish timing/window: `Publish immediately after blockers are fixed and gates pass` (`npm test`, `npm run typecheck`, `npm pack` validation).
+
+Task 4 (human):
+- Create/confirm the target GitHub repository and provide the remote URL (SSH or HTTPS), then approve push execution.
+- Status: `Pending`
+- Expected artifact:
+  - `gitRemoteUrl`: e.g. `git@github.com:<owner>/cardano-error-normalizer.git` or `https://github.com/<owner>/cardano-error-normalizer.git`
+  - push target branch confirmation (`main`)
+- Needed by agent to configure `origin`, push commits, and verify CI trigger links.
+
+Task 4 (agent, after human Task 4):
+- Configure `origin` remote, push `main`, and confirm GitHub Actions CI is triggered for the latest commit.
+- Status: `Pending`
+- Completion gate:
+  - `git remote -v` shows `origin`.
+  - `git push -u origin main` succeeds.
+  - CI run URL captured in this file.
