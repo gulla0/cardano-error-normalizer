@@ -107,8 +107,8 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Human Task 3 - confirm v0.1.0 release decision and timing window`
-- Blockers: `Waiting on Human Task 3 approval inputs`
+- Current task: `Agent Task - remediate publish blockers from Human Task 3 decision`
+- Blockers: `v0.1.0 publish hold until package scope, TypeScript consumer contract, and docs path hygiene blockers are fixed`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -207,6 +207,12 @@
 - Reason: Human Task 2 delivered real-world samples including a Blockfrost SDK shape that omitted `message`; fixture-backed regression locking was required before moving to release approval.
 - Impact: Regression protection now includes real-world payloads while preserving deterministic MVP mappings; suite increased to 23/23 passing tests.
 
+- Date: 2026-02-18
+- Section: Human Task 3 release decision and publish window
+- Decision: Keep `v0.1.0` scope unchanged but reject release as publish-ready until three pre-publish blockers are fixed: replace placeholder npm scope/name, implement a supported TypeScript consumer contract (tsconfig + TypeScript dependency + build/types output), and remove absolute local filesystem paths from published docs.
+- Reason: Human approval response confirmed MVP feature scope is acceptable while identifying packaging/distribution blockers that could break consumers or leak local-path references.
+- Impact: Release is now explicitly gated by publish-readiness remediation; next agent-owned work is packaging hardening and docs cleanup before final publish approval.
+
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (23/23 tests)
@@ -225,10 +231,12 @@
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
-- [x] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
+- [ ] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
+- [ ] Add `npm run typecheck` (no special hacks) and confirm pass.
+- [ ] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
@@ -269,5 +277,12 @@ Task 3 (human):
   - approve v0.1.0 release candidate scope
   - approve changelog wording
   - approve publish timing/window
-- Status: `Pending`
-- Needed by agent before final release/publish steps.
+- Status: `Completed`
+- Received:
+  - Release scope decision: `Conditional reject for publish readiness` (MVP scope accepted; publishing blocked until fixes are applied).
+  - Must-fix blockers:
+    - Replace placeholder package name/scope `@your-npm-scope/cardano-error-normalizer` with final real scope.
+    - Add supported TypeScript consumer contract: `tsconfig.json`, `typescript` dependency, build step, and proper emitted `.d.ts` target in exports.
+    - Remove absolute local paths from published docs (`test/fixtures/README.md`).
+  - Changelog decision: `Approved with minor formatting edits requested` (heading spacing/newline polish and packaging/compatibility note; release date should match actual publish date).
+  - Publish timing/window: `Publish immediately after blockers are fixed and gates pass` (`npm test`, `npm run typecheck`, `npm pack` validation).
