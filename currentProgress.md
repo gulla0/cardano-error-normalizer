@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Tarball validation remediation (release-candidate recovery)`
-- Current task: `Agent-owned: rebuild/repack latest dist, re-validate React runtime auto-bindings, and close UNKNOWN provider-code gaps from real payloads`
+- Current task: `Human-owned: run consumer-app runtime smoke for useCardanoError without config.hooks and report pass/fail + startup stack trace if failing`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -140,9 +140,9 @@
 ## Tarball Validation Remediation Queue (Open)
 
 ### A) Packaging/Artifact Correctness
-- [ ] Rebuild `dist` from latest `main` and generate a fresh tarball candidate.
-- [ ] Inspect packed `dist/react/index.js` to confirm runtime auto-binding logic is present (no mandatory `config.hooks` throw on default path).
-- [ ] Re-run local publish gates before handoff (`npm test`, `npm run typecheck`, `npm run build`, `npm pack --dry-run`).
+- [x] Rebuild `dist` from latest `main` and generate a fresh tarball candidate.
+- [x] Inspect packed `dist/react/index.js` to confirm runtime auto-binding logic is present (no mandatory `config.hooks` throw on default path).
+- [x] Re-run local publish gates before handoff (`npm test`, `npm run typecheck`, `npm run build`, `npm pack --dry-run`).
 
 ### B) React Runtime Smoke Recovery
 - [ ] Validate `useCardanoError` in a consumer app without `config.hooks`; confirm no startup throw.
@@ -162,6 +162,13 @@
 - [ ] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Tarball remediation section A closure (packaging/artifact correctness)
+- Decision: Close section A after rebuilding/packing a fresh candidate and validating packed React runtime behavior and local publish gates.
+- Reason: Section A required concrete artifact-level evidence that the tarball contains runtime auto-binding logic and that repository publish gates are green before proceeding to consumer smoke recovery.
+- Impact: Packaging correctness risk is retired; next actionable item is the consumer-app runtime smoke step (section B), which needs external validation evidence.
+- Test evidence: `npm run build` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack` -> generated `gulla0-cardano-error-normalizer-0.2.0.tgz`; packed `dist/react/index.js` shows `options.config?.hooks ?? defaultHookBindings()` with `globalThis.React` runtime resolution; `npm test` -> `69/69` passing; `npm run typecheck` -> passing; `npm run build` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run` -> passing.
+
 - Date: 2026-02-18
 - Section: Tarball validation failure intake (consumer smoke run)
 - Decision: Re-open repo-owned remediation work after external tarball validation reported critical failures in React runtime default path and real payload code fidelity.
