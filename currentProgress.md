@@ -112,6 +112,13 @@
 
 ## Decisions Log
 - Date: 2026-02-18
+- Section: Post-release maintenance (verification fixture parity with observed runtime Blockfrost auth errors)
+- Decision: Add a dedicated Blockfrost verification fixture row for `403 Invalid project token` in `test/fixtures/verification/blockfrost.json`.
+- Reason: The runtime fixture pack already contains observed `BF-403`, but the verification fixture suite lacked this explicit auth-status row.
+- Impact: Verification fixtures now cover observed Blockfrost auth failure semantics (`403` -> `UNAUTHORIZED`) in addition to quota/rate/mempool/internal mappings.
+- Test evidence: `npm test -- test/verification.fixtures.test.ts` -> `4/4` passing.
+
+- Date: 2026-02-18
 - Section: Post-release maintenance kickoff (runtime fixture provenance contract)
 - Decision: Require `real-world-errors` fixtures to include provenance metadata (`observedAt`, `capturedFrom`) and enforce unique fixture IDs via `test/real-world-payloads.test.ts`.
 - Reason: Active maintenance work needs deterministic tracking for when/where runtime payload samples were observed, so future mapping changes can be audited against concrete evidence.
@@ -420,8 +427,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 68/68, `npm run typecheck`)
-- Notes: Added post-release fixture provenance guardrails (`observedAt`, `capturedFrom`, unique `id`) and verified the full suite remains green.
+- Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`)
+- Notes: Added `BF_403_INVALID_PROJECT_TOKEN` to `test/fixtures/verification/blockfrost.json` to close parity gap with observed runtime fixture coverage.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.

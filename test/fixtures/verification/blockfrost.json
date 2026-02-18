@@ -14,6 +14,20 @@
     }
   },
   {
+    "label": "BF_403_INVALID_PROJECT_TOKEN",
+    "err": {
+      "status_code": 403,
+      "error": "Forbidden",
+      "message": "Invalid project token."
+    },
+    "expectedCode": "UNAUTHORIZED",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 403
+    }
+  },
+  {
     "label": "BF_402",
     "err": {
       "status_code": 402,
