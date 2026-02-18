@@ -106,11 +106,18 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Post-publish documentation and verification closeout`
-- Current task: `Agent-owned: sync docs/progress with completed real-time validation and npm publish state`
+- Active section: `Post-release maintenance and monitoring`
+- Current task: `Agent-owned: maintain fixture coverage for newly observed runtime payloads`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Post-publish documentation and verification closeout
+- Decision: Reconcile progress state with shipped reality by closing the release-readiness section and moving active focus to post-release maintenance.
+- Reason: `@gulla0/cardano-error-normalizer@0.2.0` is already published and live verification is complete, but this file still listed pending release-readiness steps.
+- Impact: Workflow state is now consistent with the actual release/publish status, preventing duplicate publish actions in future cycles.
+- Test evidence: `npm test` -> `68/68` passing; `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: Real-time stack verification completion (Mesh + Blockfrost + Eternl)
 - Decision: Accept live verification results as complete after confirming submit-path CIP-30 payload `{ code: -2, info: "unknown error submitTx" }` maps to `WALLET_SUBMIT_FAILURE`, sign decline `{ code: 2, info: "user declined sign tx" }` maps to `WALLET_SIGN_USER_DECLINED`, and provider query `400` maps to `BAD_REQUEST`.
@@ -400,7 +407,7 @@
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm test` 68/68, `npm run typecheck`)
-- Notes: Added submit-context regression coverage for wallet `APIError` `code=-2` mapping to `WALLET_SUBMIT_FAILURE` (`test/adapters.wallet.test.ts`, `test/normalizer.integration.test.ts`); live runtime verification also passed for submit/sign/provider-query flows.
+- Notes: Post-publish closeout verification rerun passed; progress state was reconciled to published `0.2.0` status and maintenance-mode next steps.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -542,13 +549,6 @@ Task 5 (human):
   - Commit pushed: `ddcce6e` (`Fix npm ci lockfile sync and mark react peer optional`).
   - GitHub Actions status: `Passed` for the `test` workflow/job on commit `#7`.
 
-## Next Steps (Release Readiness)
-- Run publish gate one more time on latest `main`:
-  - `npm ci`
-  - `npm run typecheck`
-  - `npm test`
-  - `npm pack --dry-run`
-- If all green, publish package:
-  - `npm publish --access public`
-- After publish:
-  - Tag release in Git (`v0.2.0`) and verify install from npm registry.
+## Next Steps (Post-Release)
+- Monitor newly observed production/runtime error payloads and append fixture coverage under `test/fixtures/verification`.
+- Cut a follow-up patch release only when a mapping bug or compatibility regression is confirmed.
