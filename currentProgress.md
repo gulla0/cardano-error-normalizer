@@ -107,10 +107,22 @@
 
 ## Current Build Focus
 - Active section: `DX modernization`
-- Current task: `Implement Three-Pillar architecture: Intercept, Normalize, React`
+- Current task: `Implement Three-Pillar architecture: Intercept, Normalize complete; React pending`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX React packaging scope
+- Decision: Keep the core package framework-agnostic and deliver React helpers via a sibling package/entrypoint instead of adding a React peer dependency to the core package.
+- Reason: Preserve minimal core dependency surface and avoid forcing React constraints on non-React consumers.
+- Impact: Core DX work can proceed with `globalNormalizer` + provider interception now, while React hook delivery is isolated to a follow-on package boundary.
+
+- Date: 2026-02-18
+- Section: DX interception and normalize helpers
+- Decision: Add `src/config/errors.ts` (`globalNormalizer`, `normalizeError`) and `src/utils/safeProvider.ts` (`withErrorSafety`) with proxy method-level normalization and metadata annotation.
+- Reason: Move normalization from callsite boilerplate to reusable wrappers and a singleton default normalizer.
+- Impact: Provider method failures can now be normalized centrally with consistent context and `meta.safeProvider*` diagnostics.
+
 - Date: 2026-02-18
 - Section: DX architecture direction
 - Decision: Adopt an inversion-of-control DX strategy with three pillars: `withErrorSafety` proxy wrapper for providers, `useCardanoOp` hook for wallet/UI flows, and a global normalizer singleton exported from one config module.
@@ -245,8 +257,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 23/23; GitHub Actions CI run #1 `success` on pushed `main` head `29a1f9f61e20360b8db5933f8b5b9eb47e958c9c`)
-- Notes: Verified CI trigger URL `https://github.com/gulla0/cardano-error-normalizer/actions/runs/22122385189`.
+- Result: Pass (`npm test` 27/27 locally; previous GitHub Actions CI run #1 `success` on pushed `main` head `29a1f9f61e20360b8db5933f8b5b9eb47e958c9c`)
+- Notes: Added passing proxy-wrapper coverage in `test/utils.safeProvider.test.ts`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -260,11 +272,11 @@
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
-- [ ] Add `src/config/errors.ts` singleton export (`globalNormalizer`) and route internal helper usage through it.
-- [ ] Add `src/utils/safeProvider.ts` with generic `withErrorSafety<T extends object>` proxy wrapper for async provider methods.
-- [ ] Add tests for proxy behavior: function wrapping, non-function property passthrough, context metadata propagation, and preserved return values.
+- [x] Add `src/config/errors.ts` singleton export (`globalNormalizer`) and route internal helper usage through it.
+- [x] Add `src/utils/safeProvider.ts` with generic `withErrorSafety<T extends object>` proxy wrapper for async provider methods.
+- [x] Add tests for proxy behavior: function wrapping, non-function property passthrough, context metadata propagation, and preserved return values.
 - [ ] Add `src/react/useCardanoOp.ts` and type-safe hook tests for loading/data/error/reset behavior with normalized throw-through.
-- [ ] Decide packaging model for React hook delivery (`react` peer dependency in main package vs dedicated optional entrypoint).
+- [x] Decide packaging model for React hook delivery (`react` peer dependency in main package vs dedicated optional entrypoint).
 - [ ] Update README with DX-first integration path and migration examples from manual `try/catch` to wrappers/hooks.
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
 - [x] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
@@ -345,5 +357,7 @@ Task 5 (human):
 - Confirm DX packaging scope for React integration:
   - include `useCardanoOp` in this package with `react` peer dependency, or
   - keep core package framework-agnostic and publish React hook from a sibling package/entrypoint
-- Status: `Pending`
-- Needed by agent to finalize public API and dependency boundaries before implementing the hook.
+- Status: `Completed`
+- Received:
+  - Decision: `core package framework-agnostic` + `React hook in sibling package/entrypoint`
+  - Approval timestamp: `2026-02-18`
