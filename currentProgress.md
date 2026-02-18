@@ -520,3 +520,26 @@ Task 5 (human):
 - Received:
   - Decision: `core package framework-agnostic` + `React hook in sibling package/entrypoint`
   - Approval timestamp: `2026-02-18`
+
+## 2026-02-18 Dependency/CI Follow-Up
+- Trigger:
+  - GitHub Actions `npm ci` failed with lockfile sync error:
+    - `npm ci can only install packages when your package.json and package-lock.json are in sync`
+    - `Missing: react@19.2.4 from lock file`
+- Agent actions completed:
+  - Synced root metadata in `package-lock.json` to match `package.json`:
+    - package name aligned to `@gulla0/cardano-error-normalizer`
+    - root peer metadata added for `react`
+  - Added optional peer metadata in `package.json`:
+    - `peerDependenciesMeta.react.optional = true`
+  - Mirrored optional peer metadata in `package-lock.json`.
+- Verification run results (local):
+  - `npm ci --dry-run`: passed
+  - `npm ci`: passed
+  - `npm run typecheck`: passed
+  - `npm test`: passed (`68/68`)
+- Human next action:
+  - Commit and push updated files:
+    - `package.json`
+    - `package-lock.json`
+  - Re-run/observe GitHub Actions on the pushed commit.
