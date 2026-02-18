@@ -106,8 +106,8 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Post-release monitoring and fixture expansion`
-- Current task: `Agent-owned: monitor and codify newly observed runtime payloads`
+- Active section: `Tarball validation remediation (release-candidate recovery)`
+- Current task: `Agent-owned: rebuild/repack latest dist, re-validate React runtime auto-bindings, and close UNKNOWN provider-code gaps from real payloads`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -137,7 +137,38 @@
 - [x] Run package validation (`npm pack --dry-run`) using `/tmp` npm cache strategy if needed.
 - [x] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
 
+## Tarball Validation Remediation Queue (Open)
+
+### A) Packaging/Artifact Correctness
+- [ ] Rebuild `dist` from latest `main` and generate a fresh tarball candidate.
+- [ ] Inspect packed `dist/react/index.js` to confirm runtime auto-binding logic is present (no mandatory `config.hooks` throw on default path).
+- [ ] Re-run local publish gates before handoff (`npm test`, `npm run typecheck`, `npm run build`, `npm pack --dry-run`).
+
+### B) React Runtime Smoke Recovery
+- [ ] Validate `useCardanoError` in a consumer app without `config.hooks`; confirm no startup throw.
+- [ ] If throw persists, patch React binding resolution path and add/adjust regression tests for packed-runtime behavior.
+- [ ] Repack and re-test until React default path is green.
+
+### C) Real-Payload Mapping Gaps (`UNKNOWN` on provider failures)
+- [ ] Capture the exact raw provider error payload(s) that normalized to `UNKNOWN` during consumer validation.
+- [ ] Add fixture rows under verification/runtime fixture packs for those payloads with expected canonical codes.
+- [ ] Update adapter/meta inference logic as needed to map those payloads deterministically (while preserving existing mappings).
+- [ ] Re-run verification-focused tests and full suite to lock regressions.
+
+### D) Release Candidate Exit Criteria
+- [ ] Consumer tarball install should be non-extraneous (`--save`) and import checks pass for root + `./react`.
+- [ ] Runtime smoke for `useCardanoError` without manual hooks must pass.
+- [ ] Real failing provider operation must normalize to expected non-`UNKNOWN` code where mapping exists.
+- [ ] Only then mark tarball as publish candidate.
+
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Tarball validation failure intake (consumer smoke run)
+- Decision: Re-open repo-owned remediation work after external tarball validation reported critical failures in React runtime default path and real payload code fidelity.
+- Reason: Consumer validation against `gulla0-cardano-error-normalizer-0.2.0.tgz` showed `useCardanoError` still requiring manual bindings at runtime and provider failure payloads normalizing to `UNKNOWN`, so release-candidate quality gates are not met.
+- Impact: Active focus moves from generic post-release monitoring to targeted packaging/runtime/mapping remediation with explicit exit criteria for a new tarball candidate.
+- Test evidence: External consumer validation report: root + `./react` imports pass; runtime `useCardanoError` default path fails; real provider failure normalized to `UNKNOWN`; candidate rejected.
+
 - Date: 2026-02-18
 - Section: DX follow-up release-readiness closure (section E)
 - Decision: Close section E after confirming changelog/version coverage for DX API changes and rerunning publish gates with `/tmp` npm cache strategy.
