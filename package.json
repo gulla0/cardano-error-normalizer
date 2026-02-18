@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/useCardanoOp.d.ts",
+      "import": "./dist/react/useCardanoOp.js"
     }
   },
   "types": "./dist/index.d.ts",
