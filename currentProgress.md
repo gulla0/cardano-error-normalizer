@@ -106,8 +106,8 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `DX modernization`
-- Current task: `Run real-time integration testing against Mesh + Blockfrost + Eternl stack`
+- Active section: `DX v2 blueprint implementation`
+- Current task: `Implement smart normalization + resolution hints + React subpath + packaging updates`
 - Blockers: `none`
 
 ## Decisions Log
@@ -298,6 +298,15 @@
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
 - [x] Add `npm run typecheck` (no special hacks) and confirm pass.
 - [x] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
+- [ ] DX v2: expand core error model in `src/types.ts` (`ErrorResolution`, `CardanoAppError.originalError`, `CardanoAppError.resolution`, `NormalizerConfig.debug/parseTraces`).
+- [ ] DX v2: add `src/core/resolutions.ts` lookup table and `getResolutionForCode(code)` helper.
+- [ ] DX v2: add `src/core/normalize.ts` as the central smart normalizer (message extraction, matcher strategy, hint attachment, debug console group logs).
+- [ ] DX v2: wire `withErrorSafety` to new normalizer/config contract and ensure normalized throws for wrapped provider methods.
+- [ ] DX v2: add React direct hook entrypoint `src/react/index.ts` with `useCardanoError(config?)` and `executeWithSafety`.
+- [ ] DX v2: align package exports for subpath imports (`./react`) and verify peer dependency strategy for optional React usage.
+- [ ] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
+- [ ] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
+- [ ] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
