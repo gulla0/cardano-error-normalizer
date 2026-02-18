@@ -1,9 +1,16 @@
 import { globalNormalizer } from "../config/errors.ts";
-import type { CardanoAppError, NormalizeContext, Normalizer } from "../types.ts";
+import { createSmartNormalizer } from "../core/normalize.ts";
+import type {
+  CardanoAppError,
+  NormalizeContext,
+  Normalizer,
+  NormalizerConfig
+} from "../types.ts";
 
 export interface WithErrorSafetyOptions {
   ctx: NormalizeContext | ((method: string, args: unknown[]) => NormalizeContext);
   normalizer?: Normalizer;
+  normalizerConfig?: Partial<NormalizerConfig>;
   onError?: (
     normalized: CardanoAppError,
     details: { method: string; args: unknown[] }
@@ -14,7 +21,7 @@ export function withErrorSafety<T extends object>(
   provider: T,
   options: WithErrorSafetyOptions
 ): T {
-  const normalizer = options.normalizer ?? globalNormalizer;
+  const normalizer = resolveNormalizer(options);
 
   return new Proxy(provider, {
     get(target, prop, receiver) {
@@ -42,6 +49,18 @@ export function withErrorSafety<T extends object>(
       };
     }
   });
+}
+
+function resolveNormalizer(options: WithErrorSafetyOptions): Normalizer {
+  if (options.normalizer) {
+    return options.normalizer;
+  }
+
+  if (options.normalizerConfig) {
+    return createSmartNormalizer(options.normalizerConfig);
+  }
+
+  return globalNormalizer;
 }
 
 function normalizeAndAnnotateError(

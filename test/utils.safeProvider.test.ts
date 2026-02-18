@@ -116,3 +116,77 @@ test("withErrorSafety invokes onError callback with normalized error details", a
   assert.equal(capturedCode, "UNKNOWN");
   assert.equal(capturedArg, "tx1");
 });
+
+test("withErrorSafety normalizes sync throws from wrapped methods", () => {
+  const provider = {
+    submitTx(): string {
+      throw {
+        status_code: 425,
+        error: "Mempool Full",
+        message: "Mempool is full"
+      };
+    }
+  };
+
+  const safeProvider = withErrorSafety(provider, {
+    ctx: {
+      source: "provider_submit",
+      stage: "submit",
+      provider: "blockfrost"
+    }
+  });
+
+  assert.throws(
+    () => safeProvider.submitTx(),
+    (err: unknown) => {
+      const normalized = err as {
+        name: string;
+        code: string;
+        meta?: Record<string, unknown>;
+      };
+
+      assert.equal(normalized.name, "CardanoAppError");
+      assert.equal(normalized.code, "MEMPOOL_FULL");
+      assert.equal(normalized.meta?.safeProviderWrapped, true);
+      assert.equal(normalized.meta?.safeProviderMethod, "submitTx");
+      return true;
+    }
+  );
+});
+
+test("withErrorSafety accepts normalizerConfig when no custom normalizer is provided", async () => {
+  const provider = {
+    async submitTx(): Promise<string> {
+      throw {
+        message: "request timeout",
+        trace: "line one\nline two"
+      };
+    }
+  };
+
+  const safeProvider = withErrorSafety(provider, {
+    ctx: {
+      source: "provider_submit",
+      stage: "submit"
+    },
+    normalizerConfig: {
+      parseTraces: true
+    }
+  });
+
+  await assert.rejects(
+    () => safeProvider.submitTx(),
+    (err: unknown) => {
+      const normalized = err as {
+        code: string;
+        resolution?: { title: string };
+        meta?: Record<string, unknown>;
+      };
+
+      assert.equal(normalized.code, "TIMEOUT");
+      assert.equal(normalized.resolution?.title, "Retry timed-out request");
+      assert.deepEqual(normalized.meta?.traces, ["line one", "line two"]);
+      return true;
+    }
+  );
+});
