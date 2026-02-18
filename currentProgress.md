@@ -106,11 +106,17 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Post-DX real-time integration validation`
-- Current task: `Human Task: run real-time integration testing against Mesh + Blockfrost + Eternl stack and share failures/success artifacts`
+- Active section: `Verification report remediation (spec-aligned + fixture-tested)`
+- Current task: `Implement verification follow-ups tracked in verification-followup-instructions.md using Research Dump/verification-3rdParty-errors.md as source of truth`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification report remediation planning
+- Decision: Add a dedicated implementation guide at `verification-followup-instructions.md` and treat `Research Dump/verification-3rdParty-errors.md` as the verification source of truth for all follow-up changes.
+- Reason: The report includes exact spec corrections and fixture/test requirements that must be tracked independently from prior DX v2 progress.
+- Impact: Active work now has a concrete checklist for API shape, presets, taxonomy, heuristics, fixtures/tests, and docs updates, with explicit traceability to verification findings.
+
 - Date: 2026-02-18
 - Section: DX v2 validation gate rerun
 - Decision: Run publish/readiness validation gates after DX v2 implementation and use `NPM_CONFIG_CACHE=/tmp/.npm-cache` for `npm pack --dry-run` to avoid host-level `~/.npm` cache permission issues.
@@ -361,6 +367,13 @@
 - [x] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
 - [x] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
 - [x] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
+- [ ] Execute verification remediation checklist in `verification-followup-instructions.md`.
+- [ ] Implement missing wallet families from verification report (`DataSignError`, `PaginateError`) and add required taxonomy codes.
+- [ ] Align preset separation and naming (`meshProviderPreset` vs `cip30WalletPreset`) per verification report.
+- [ ] Add/extend `inferErrorMeta` and enforce meta-only enrichment merge behavior.
+- [ ] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
+- [ ] Update README tables/examples for verification-aligned mappings and preset method names.
+- [ ] Run verification gate after implementation: `npm test`, `npm run typecheck`, `npm pack --dry-run`.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
