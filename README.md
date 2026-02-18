@@ -172,6 +172,29 @@ try {
 }
 ```
 
+### Preset Helpers (Layer-Correct Defaults)
+
+Use presets when method names already imply wallet/provider context:
+
+```ts
+import {
+  cip30WalletPreset,
+  meshProviderPreset
+} from "@gulla0/cardano-error-normalizer";
+
+const safeMeshProvider = meshProviderPreset(rawMeshProvider, {
+  provider: "blockfrost"
+});
+await safeMeshProvider.fetchAddressUTxOs("addr_test...");
+
+const safeWalletApi = cip30WalletPreset(rawWalletApi, {
+  walletHint: "eternl"
+});
+await safeWalletApi.getUtxos();
+```
+
+`meshProviderPreset` maps Mesh provider methods like `fetchAddressUTxOs` to provider-query context, while `cip30WalletPreset` maps CIP-30 wallet methods like `getUtxos` to wallet-query context.
+
 ### Rendering Actionable Resolution Hints
 
 Every normalized error can include `resolution` guidance:
@@ -224,10 +247,16 @@ npm run build
 | TxSignError | `1` | ProofGeneration | `WALLET_SIGN_PROOF_GENERATION` |
 | TxSignError | `2` | UserDeclined | `WALLET_SIGN_USER_DECLINED` |
 | TxSignError (CIP-95 ext) | `3` | DeprecatedCertificate | `TX_LEDGER_VALIDATION_FAILED` |
+| DataSignError | `1` | ProofGeneration | `WALLET_DATA_SIGN_PROOF_GENERATION` |
+| DataSignError | `2` | AddressNotPK | `WALLET_DATA_SIGN_ADDRESS_NOT_PK` |
+| DataSignError | `3` | UserDeclined | `WALLET_DATA_SIGN_USER_DECLINED` |
+| PaginateError | n/a (`maxSize`) | requested page exceeds range | `WALLET_PAGINATION_OUT_OF_RANGE` |
 | TxSendError | `1` | Refused | `WALLET_SUBMIT_REFUSED` |
 | TxSendError | `2` | Failure | `WALLET_SUBMIT_FAILURE` |
 
 ## Blockfrost Mapping Table
+
+`fromBlockfrostError` uses key-based parsing (`status_code`, `error`, `message`) across nested payloads, so mapping does not depend on JSON property order.
 
 | HTTP status | Meaning | `CardanoErrorCode` | Notes (`meta`) |
 | ---: | --- | --- | --- |

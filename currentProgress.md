@@ -107,10 +107,17 @@
 
 ## Current Build Focus
 - Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Execution checklist #7 pending: README table/example alignment; checklist #6 fixture-driven verification sets + regression locking completed`
+- Current task: `Human-owned: run real-time stack validation using Mesh + Blockfrost + wallet connectors against live/staging flows`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification remediation execution checklist #7 (README alignment)
+- Decision: Update `README.md` mapping docs to include `DataSignError` + `PaginateError` wallet rows, add explicit Blockfrost key-based parsing note (`status_code/error/message` order agnostic), and add preset usage example showing Mesh `fetchAddressUTxOs` versus CIP-30 `getUtxos`.
+- Reason: Close the final agent-owned verification checklist section and align docs/examples with implemented preset and adapter behavior.
+- Impact: Public docs now match shipped normalization taxonomy and layer-correct preset method naming, reducing integration drift.
+- Test evidence: `npm test` -> `65/65` passing; `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: Verification remediation execution checklist #6 (fixture-driven regression locking)
 - Decision: Add dedicated verification fixture packs under `test/fixtures/verification` (`blockfrost.json`, `wallet.json`, `nodeStrings.json`, `mesh.json`) and add `test/verification.fixtures.test.ts` to assert adapter mappings plus `inferErrorMeta` expectations per fixture row.
