@@ -107,10 +107,16 @@
 
 ## Current Build Focus
 - Active section: `DX v2 blueprint implementation`
-- Current task: `DX v2 add React direct hook entrypoint`
+- Current task: `DX v2 align package exports for direct react subpath`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX v2 direct React entrypoint surface
+- Decision: Add `src/react/index.ts` with `useCardanoError(config)` as a config-driven hook wrapper over `createUseCardanoOp`, plus `executeWithSafety(operation, options)` for normalized async boundaries outside provider proxies.
+- Reason: Complete the next agent-owned DX v2 section by exposing direct React-flow APIs without forcing consumers to assemble hook factories for common usage.
+- Impact: React integrations now have a single-entry ergonomic surface for hook state and safe async execution while retaining configurable normalizer precedence (`normalizer` -> `normalizerConfig` -> global default).
+
 - Date: 2026-02-18
 - Section: DX v2 safe provider contract wiring
 - Decision: Extend `withErrorSafety` options with `normalizerConfig?: Partial<NormalizerConfig>` and resolve normalizer precedence as `normalizer` override -> per-wrapper smart normalizer from `normalizerConfig` -> shared `globalNormalizer`, while preserving normalized rethrow behavior for both async rejections and sync throws.
@@ -293,8 +299,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 39/39 locally; `npm run typecheck` pass)
-- Notes: Added passing `test/utils.safeProvider.test.ts` coverage for sync-throw normalization and `normalizerConfig` wiring (`parseTraces`) through `withErrorSafety`.
+- Result: Pass (`npm test` 41/41 locally)
+- Notes: Added passing `test/react.index.test.ts` coverage for `useCardanoError(config)` state transitions and `executeWithSafety` normalized rethrow + callback behavior.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -326,7 +332,7 @@
 - [x] DX v2: add `src/core/resolutions.ts` lookup table and `getResolutionForCode(code)` helper.
 - [x] DX v2: add `src/core/normalize.ts` as the central smart normalizer (message extraction, matcher strategy, hint attachment, debug console group logs).
 - [x] DX v2: wire `withErrorSafety` to new normalizer/config contract and ensure normalized throws for wrapped provider methods.
-- [ ] DX v2: add React direct hook entrypoint `src/react/index.ts` with `useCardanoError(config?)` and `executeWithSafety`.
+- [x] DX v2: add React direct hook entrypoint `src/react/index.ts` with `useCardanoError(config?)` and `executeWithSafety`.
 - [ ] DX v2: align package exports for subpath imports (`./react`) and verify peer dependency strategy for optional React usage.
 - [ ] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
 - [ ] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
