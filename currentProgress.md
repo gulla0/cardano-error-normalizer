@@ -106,11 +106,17 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `DX v2 blueprint implementation`
-- Current task: `DX v2 run validation gates (npm test, npm run typecheck, npm pack --dry-run)`
+- Active section: `Post-DX real-time integration validation`
+- Current task: `Human Task: run real-time integration testing against Mesh + Blockfrost + Eternl stack and share failures/success artifacts`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX v2 validation gate rerun
+- Decision: Run publish/readiness validation gates after DX v2 implementation and use `NPM_CONFIG_CACHE=/tmp/.npm-cache` for `npm pack --dry-run` to avoid host-level `~/.npm` cache permission issues.
+- Reason: Close the next agent-owned section from the workflow (`npm test`, `npm run typecheck`, `npm pack --dry-run`) with deterministic pass/fail evidence.
+- Impact: All DX v2 validation gates are passing; remaining next step is human-owned real-time stack validation.
+
 - Date: 2026-02-18
 - Section: DX v2 README usage alignment
 - Decision: Update README DX guidance to prefer direct `useCardanoError` import from `@gulla0/cardano-error-normalizer/react`, document `normalizerConfig` (`debug`, `parseTraces`) usage, and add a resolution-hint rendering snippet for UI surfaces.
@@ -317,8 +323,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 49/49 locally)
-- Notes: README DX v2 examples updated for direct React hook import, debug/trace config usage, and resolution-hint rendering; regression suite remains green.
+- Result: Pass (`npm test` 49/49, `npm run typecheck`, `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run`)
+- Notes: `npm pack --dry-run` initially failed due host `~/.npm` cache permissions (`EPERM`); rerun with local writable cache succeeded and produced expected tarball contents.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -354,7 +360,7 @@
 - [x] DX v2: align package exports for subpath imports (`./react`) and verify peer dependency strategy for optional React usage.
 - [x] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
 - [x] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
-- [ ] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
+- [x] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
