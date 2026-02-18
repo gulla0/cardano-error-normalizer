@@ -14,7 +14,9 @@ import { extractErrorMessage } from "./utils/guards.ts";
 
 const DEFAULT_CONFIG: NormalizerConfig = {
   adapters: [fromMeshError, fromWalletError, fromBlockfrostError, fromNodeStringError],
-  includeFingerprint: false
+  includeFingerprint: false,
+  debug: false,
+  parseTraces: false
 };
 
 export function createNormalizer(
@@ -77,6 +79,8 @@ function finalizeError(
     txHash: candidate.txHash ?? ctx.txHash,
     txCborHexHash: candidate.txCborHexHash,
     raw: candidate.raw ?? raw,
+    originalError: candidate.originalError ?? raw,
+    resolution: candidate.resolution,
     meta: candidate.meta
   };
 

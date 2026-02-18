@@ -11,6 +11,12 @@ export type ErrorSource =
 export type ErrorStage = "build" | "sign" | "submit";
 export type ErrorSeverity = "debug" | "info" | "warn" | "error";
 
+export interface ErrorResolution {
+  title: string;
+  steps: string[];
+  docsUrl?: string;
+}
+
 export interface CardanoAppError {
   name: "CardanoAppError";
   source: ErrorSource;
@@ -26,6 +32,8 @@ export interface CardanoAppError {
   txHash?: string;
   txCborHexHash?: string;
   raw: unknown;
+  originalError: unknown;
+  resolution?: ErrorResolution;
   fingerprint?: string;
   meta?: Record<string, unknown>;
 }
@@ -52,4 +60,6 @@ export interface Normalizer {
 export interface NormalizerConfig {
   adapters: AdapterFn[];
   includeFingerprint: boolean;
+  debug: boolean;
+  parseTraces: boolean;
 }

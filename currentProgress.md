@@ -267,10 +267,16 @@
 - Reason: Human Task 4 provided remote URL, confirmed branch target (`main`), and approved push execution.
 - Impact: Remote publication handoff is complete and CI is verified on the pushed head commit.
 
+- Date: 2026-02-18
+- Section: DX v2 core error model expansion
+- Decision: Add `ErrorResolution` type and extend `CardanoAppError` with `originalError` and optional `resolution`, while extending `NormalizerConfig` with `debug` and `parseTraces` flags defaulted to `false`.
+- Reason: Start DX v2 by widening the canonical error/config contract before adding the new resolution table and smart normalizer pipeline.
+- Impact: Core types are now ready for resolution-hint attachment and debug/trace behaviors without breaking existing normalization flows.
+
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 30/30 locally; `npm run typecheck` pass)
-- Notes: Added passing hook-entrypoint coverage in `test/react.useCardanoOp.test.ts` for loading/data/error/reset behavior and normalized throw-through.
+- Result: Pass (`npm test` 31/31 locally; `npm run typecheck` pass)
+- Notes: Added passing core-model coverage in `test/normalizer.phase1.test.ts` for `originalError` preservation and adapter-provided `resolution` payload retention.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -283,7 +289,7 @@
 - 2026-02-17: `ee53fca` - Add `CHANGELOG.md` entry for taxonomy v1 and sync progress.
 
 ## Next
-- [ ] Read `mvp.md` and this file at start of the next cycle.
+- [x] Read `mvp.md` and this file at start of the next cycle.
 - [x] Add `src/config/errors.ts` singleton export (`globalNormalizer`) and route internal helper usage through it.
 - [x] Add `src/utils/safeProvider.ts` with generic `withErrorSafety<T extends object>` proxy wrapper for async provider methods.
 - [x] Add tests for proxy behavior: function wrapping, non-function property passthrough, context metadata propagation, and preserved return values.
@@ -298,7 +304,7 @@
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
 - [x] Add `npm run typecheck` (no special hacks) and confirm pass.
 - [x] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
-- [ ] DX v2: expand core error model in `src/types.ts` (`ErrorResolution`, `CardanoAppError.originalError`, `CardanoAppError.resolution`, `NormalizerConfig.debug/parseTraces`).
+- [x] DX v2: expand core error model in `src/types.ts` (`ErrorResolution`, `CardanoAppError.originalError`, `CardanoAppError.resolution`, `NormalizerConfig.debug/parseTraces`).
 - [ ] DX v2: add `src/core/resolutions.ts` lookup table and `getResolutionForCode(code)` helper.
 - [ ] DX v2: add `src/core/normalize.ts` as the central smart normalizer (message extraction, matcher strategy, hint attachment, debug console group logs).
 - [ ] DX v2: wire `withErrorSafety` to new normalizer/config contract and ensure normalized throws for wrapped provider methods.

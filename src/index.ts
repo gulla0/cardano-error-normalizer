@@ -1,6 +1,7 @@
 export type {
   AdapterFn,
   CardanoAppError,
+  ErrorResolution,
   ErrorSeverity,
   ErrorSource,
   ErrorStage,
