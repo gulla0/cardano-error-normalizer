@@ -1,0 +1,93 @@
+[
+  {
+    "label": "BF_400",
+    "err": {
+      "status_code": 400,
+      "error": "Bad Request",
+      "message": "Backend did not understand your request."
+    },
+    "expectedCode": "BAD_REQUEST",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 400
+    }
+  },
+  {
+    "label": "BF_402",
+    "err": {
+      "status_code": 402,
+      "error": "Project Over Limit",
+      "message": "Usage is over limit."
+    },
+    "expectedCode": "QUOTA_EXCEEDED",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 402,
+      "blockfrostReason": "daily_limit"
+    }
+  },
+  {
+    "label": "BF_418",
+    "err": {
+      "status_code": 418,
+      "error": "Requested Banned",
+      "message": "IP has been auto-banned for flooding."
+    },
+    "expectedCode": "FORBIDDEN",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 418,
+      "blockfrostReason": "auto_banned"
+    }
+  },
+  {
+    "label": "BF_425",
+    "err": {
+      "status_code": 425,
+      "error": "Mempool Full",
+      "message": "Mempool is full, please retry later."
+    },
+    "expectedCode": "MEMPOOL_FULL",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 425,
+      "blockfrostReason": "mempool_full"
+    }
+  },
+  {
+    "label": "BF_429_SHUFFLED_NESTED",
+    "err": {
+      "response": {
+        "data": {
+          "message": "Rate limited.",
+          "status_code": 429,
+          "error": "Too Many Requests"
+        }
+      }
+    },
+    "expectedCode": "RATE_LIMITED",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 429
+    }
+  },
+  {
+    "label": "BF_500",
+    "err": {
+      "status_code": 500,
+      "error": "Internal Server Error",
+      "message": "Unexpected backend response."
+    },
+    "expectedCode": "PROVIDER_INTERNAL",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 500
+    }
+  }
+]

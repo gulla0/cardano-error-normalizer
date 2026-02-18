@@ -1,0 +1,59 @@
+[
+  {
+    "label": "MESH_WRAPPED_BLOCKFROST_402",
+    "err": {
+      "name": "MeshTxBuilderError",
+      "cause": {
+        "response": {
+          "data": {
+            "status_code": 402,
+            "error": "Payment Required",
+            "message": "Project daily request limit reached."
+          }
+        }
+      }
+    },
+    "ctx": { "source": "provider_submit", "stage": "submit" },
+    "expectedCode": "QUOTA_EXCEEDED",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 402,
+      "blockfrostReason": "daily_limit"
+    }
+  },
+  {
+    "label": "MESH_WRAPPED_WALLET_DATASIGN",
+    "err": {
+      "message": "Mesh signData failed",
+      "error": {
+        "cause": {
+          "name": "DataSignError",
+          "code": 2,
+          "info": "AddressNotPK"
+        }
+      }
+    },
+    "ctx": { "source": "wallet_sign", "stage": "sign" },
+    "expectedCode": "WALLET_DATA_SIGN_ADDRESS_NOT_PK",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    }
+  },
+  {
+    "label": "MESH_WRAPPED_NODE_STRING",
+    "err": {
+      "message": "ShelleyTxValidationError (ApplyTxError [LedgerFailure (...)])",
+      "details": {
+        "reason": "ShelleyTxValidationError (ApplyTxError [LedgerFailure (...)])"
+      }
+    },
+    "ctx": { "source": "provider_submit", "stage": "submit" },
+    "expectedCode": "TX_LEDGER_VALIDATION_FAILED",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  }
+]

@@ -107,10 +107,17 @@
 
 ## Current Build Focus
 - Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Execution checklist #6 pending: fixture-driven verification sets and regression locking; checklist #5 taxonomy + wallet adapter updates completed`
+- Current task: `Execution checklist #7 pending: README table/example alignment; checklist #6 fixture-driven verification sets + regression locking completed`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification remediation execution checklist #6 (fixture-driven regression locking)
+- Decision: Add dedicated verification fixture packs under `test/fixtures/verification` (`blockfrost.json`, `wallet.json`, `nodeStrings.json`, `mesh.json`) and add `test/verification.fixtures.test.ts` to assert adapter mappings plus `inferErrorMeta` expectations per fixture row.
+- Reason: Close the required verification fixture section with explicit coverage for Blockfrost key-based parsing (`400/402/418/425/429/500`, shuffled nested keys), wallet DataSign/Paginate/CIP-95 rows, conservative node string buckets, and mesh unwrapping behavior.
+- Impact: Verification behavior is now regression-locked with centralized fixture data, including cross-checks that metadata inference remains consistent with adapter-level normalization.
+- Test evidence: `npm test` -> `65/65` passing; `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: Verification remediation execution checklist #5 (taxonomy + wallet adapter updates)
 - Decision: Add required taxonomy codes in `src/codes.ts` (`WALLET_DATA_SIGN_PROOF_GENERATION`, `WALLET_DATA_SIGN_ADDRESS_NOT_PK`, `WALLET_DATA_SIGN_USER_DECLINED`, `WALLET_PAGINATION_OUT_OF_RANGE`), extend `fromWalletError` with DataSign family detection and Paginate `{maxSize}` handling, and annotate CIP-95 `DeprecatedCertificate` mappings with `meta.cip95DeprecatedCertificate=true`.
@@ -364,8 +371,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 61/61, `npm run typecheck`)
-- Notes: Added wallet taxonomy regression coverage for DataSign/Paginate/CIP-95 metadata in `test/adapters.wallet.test.ts` and `test/fixtures/wallet-errors.json`.
+- Result: Pass (`npm test` 65/65, `npm run typecheck`)
+- Notes: Added verification fixture packs (`test/fixtures/verification/*.json`) and a fixture-driven cross-adapter regression suite in `test/verification.fixtures.test.ts`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -406,7 +413,7 @@
 - [x] Implement missing wallet families from verification report (`DataSignError`, `PaginateError`) and add required taxonomy codes.
 - [x] Align preset separation and naming (`meshProviderPreset` vs `cip30WalletPreset`) per verification report.
 - [x] Add/extend `inferErrorMeta` and enforce meta-only enrichment merge behavior.
-- [ ] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
+- [x] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
 - [ ] Update README tables/examples for verification-aligned mappings and preset method names.
 - [ ] Run verification gate after implementation: `npm test`, `npm run typecheck`, `npm pack --dry-run`.
 

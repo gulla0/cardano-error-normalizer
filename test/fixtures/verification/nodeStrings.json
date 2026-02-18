@@ -1,0 +1,56 @@
+[
+  {
+    "label": "NODE_DESERIALISE",
+    "err": "DeserialiseFailure: expected word",
+    "expectedCode": "TX_DESERIALISE_FAILURE",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  },
+  {
+    "label": "NODE_BAD_INPUTS",
+    "err": "ApplyTxError (UtxowFailure (BadInputsUTxO (fromList [TxInCompact ...])))",
+    "expectedCode": "TX_INPUTS_MISSING_OR_SPENT",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  },
+  {
+    "label": "NODE_OUTPUT_TOO_SMALL",
+    "err": "ApplyTxError (UtxoFailure (OutputTooSmallUTxO [...]))",
+    "expectedCode": "TX_OUTPUT_TOO_SMALL",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  },
+  {
+    "label": "NODE_VALUE_NOT_CONSERVED",
+    "err": "ApplyTxError (UtxoFailure (ValueNotConservedUTxO (DeltaCoin 0) (DeltaCoin 177557))))",
+    "expectedCode": "TX_VALUE_NOT_CONSERVED",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  },
+  {
+    "label": "NODE_SCRIPT_FAILURE",
+    "err": "ApplyTxError: PlutusFailure (EvaluationFailure) due to redeemer execution units",
+    "expectedCode": "TX_SCRIPT_EVALUATION_FAILED",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  },
+  {
+    "label": "NODE_WRAPPER_FALLBACK",
+    "err": "ShelleyTxValidationError (ApplyTxError [LedgerFailure (...)])",
+    "expectedCode": "TX_LEDGER_VALIDATION_FAILED",
+    "expectedMeta": {
+      "inferredProvider": "cardano-node",
+      "inferredKind": "node_ledger_string"
+    }
+  }
+]

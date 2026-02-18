@@ -9,3 +9,4 @@ Use these files with the mapping tables in `mvp.md`:
 - `test/fixtures/blockfrost-errors.json`
 - `test/fixtures/node-errors.txt`
 - `test/fixtures/real-world-errors.json`
+- `test/fixtures/verification/*.json`

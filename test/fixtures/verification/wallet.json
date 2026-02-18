@@ -1,0 +1,57 @@
+[
+  {
+    "label": "WALLET_API_ERROR_INVALID_REQUEST",
+    "err": { "code": -1, "info": "Invalid request parameters" },
+    "expectedCode": "WALLET_INVALID_REQUEST",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    }
+  },
+  {
+    "label": "WALLET_TX_SIGN_USER_DECLINED",
+    "err": { "code": 2, "info": "UserDeclined" },
+    "expectedCode": "WALLET_SIGN_USER_DECLINED",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    }
+  },
+  {
+    "label": "WALLET_TX_SEND_FAILURE",
+    "err": { "code": 2, "info": "Failure" },
+    "expectedCode": "WALLET_SUBMIT_FAILURE",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    }
+  },
+  {
+    "label": "WALLET_DATA_SIGN_ADDRESS_NOT_PK",
+    "err": {
+      "name": "DataSignError",
+      "code": 2,
+      "info": "Address was not a P2PK address and thus had no SK associated with it."
+    },
+    "expectedCode": "WALLET_DATA_SIGN_ADDRESS_NOT_PK",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    }
+  },
+  {
+    "label": "WALLET_PAGINATE_OUT_OF_RANGE",
+    "err": { "maxSize": 100 },
+    "expectedCode": "WALLET_PAGINATION_OUT_OF_RANGE",
+    "expectedMeta": {}
+  },
+  {
+    "label": "WALLET_CIP95_DEPRECATED_CERT",
+    "err": { "code": 3, "info": "DeprecatedCertificate" },
+    "expectedCode": "TX_LEDGER_VALIDATION_FAILED",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    }
+  }
+]
