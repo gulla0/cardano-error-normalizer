@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+- Smart normalization pipeline via `createSmartNormalizer` with message matchers, resolution hint attachment, optional trace parsing, and guarded debug logging.
+- Resolution lookup table and helper (`getResolutionForCode`) to attach actionable remediation guidance by normalized code.
+- Direct React subpath entrypoint `@gulla0/cardano-error-normalizer/react` with `useCardanoError(...)` and `executeWithSafety(...)`.
+- Expanded tests for smart normalization branches, wrapper safety behavior, and React hook/safety integration paths.
+
+### Changed
+- `withErrorSafety` now supports `normalizerConfig` and resolves precedence as explicit `normalizer` override, then per-wrapper smart config, then global default.
+- `./react` package export now points to `dist/react/index.*`, and React helper surface is consolidated behind `src/react/index.ts`.
+- README integration guidance now prefers direct `useCardanoError` subpath import and documents DX v2 debug/trace options and resolution-hint rendering.
+
 ## [0.1.0] - 2026-02-17
 
 ### Added
