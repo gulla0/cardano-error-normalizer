@@ -285,4 +285,4 @@ Submit-path disambiguation note: `APIError` `code=-2` normally maps to `WALLET_I
 
 ## Example
 
-See `/examples/mesh-blockfrost-eternl.ts` for an end-to-end Mesh + Blockfrost + Eternl flow.
+See `examples/mesh-blockfrost-eternl.ts` in the repository for an end-to-end Mesh + Blockfrost + Eternl flow.

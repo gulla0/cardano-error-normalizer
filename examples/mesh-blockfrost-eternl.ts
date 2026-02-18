@@ -1,6 +1,9 @@
-import { createNormalizer } from "../src/index.ts";
+import { createNormalizer } from "@gulla0/cardano-error-normalizer";
 
-const normalizer = createNormalizer({ includeFingerprint: true });
+const normalizer = createNormalizer({
+  config: { includeFingerprint: true },
+  defaults: { source: "provider_submit", stage: "submit" }
+});
 
 function submitTransactionWithMesh(): never {
   // Simulated wrapped provider error shape from a Mesh stack.
@@ -23,8 +26,6 @@ async function runDemo(): Promise<void> {
     submitTransactionWithMesh();
   } catch (err) {
     const normalized = normalizer.normalize(err, {
-      source: "provider_submit",
-      stage: "submit",
       network: "preprod",
       provider: "blockfrost",
       walletHint: "eternl"
