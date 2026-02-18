@@ -127,6 +127,8 @@ The hook provides `loading`, `data`, `error`, `run`, `normalize`, and `reset`, a
 
 `@gulla0/cardano-error-normalizer/react` requires a React runtime (`peerDependencies.react >=16.8.0`). Non-React consumers should import only the root package entrypoint.
 
+`config.hooks` is still supported as an advanced compatibility override (for custom runtimes/test harnesses), but standard React usage should rely on the default runtime auto-binding path.
+
 ## Migration: Manual try/catch -> Wrapper/Helper
 
 Before:

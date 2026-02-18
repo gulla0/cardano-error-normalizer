@@ -20,6 +20,10 @@ export interface UseCardanoErrorConfig<TArgs extends unknown[], TData> {
     normalizer?: Normalizer;
     normalizerConfig?: Partial<NormalizerConfig>;
     onError?: (normalized: CardanoAppError, args: TArgs) => void;
+    /**
+     * Advanced compatibility override for non-standard runtimes or tests.
+     * Prefer the default auto-binding path in real React applications.
+     */
     hooks?: HookBindings;
   };
 }

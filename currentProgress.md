@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `DX follow-up React compatibility cleanup`
-- Current task: `Agent-owned: decide and document final public shape for UseCardanoErrorConfig.config.hooks`
+- Current task: `Agent-owned: run full validation gates for React DX closure`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -118,9 +118,9 @@
 - [x] Keep `createUseCardanoOp` compatibility export for advanced/custom integrations.
 
 ### B) API/Compatibility Cleanup
-- [ ] Decide final public shape for `UseCardanoErrorConfig.config.hooks` (remove vs keep as optional compatibility override).
-- [ ] If retained, ensure default path is bindingless and override path is explicitly documented as advanced-only.
-- [ ] Add migration note for consumers currently passing manual hook bindings.
+- [x] Decide final public shape for `UseCardanoErrorConfig.config.hooks` (remove vs keep as optional compatibility override).
+- [x] If retained, ensure default path is bindingless and override path is explicitly documented as advanced-only.
+- [x] Add migration note for consumers currently passing manual hook bindings.
 
 ### C) Test Coverage for React DX Closure
 - [x] Add/adjust tests validating `useCardanoError` works without `config.hooks`.
@@ -128,7 +128,7 @@
 - [ ] Run full gates after React changes: `npm test`, `npm run typecheck`, `npm run build`.
 
 ### D) Documentation + Progress Alignment
-- [ ] Update README React section to match final runtime behavior (no bindings-first footgun).
+- [x] Update README React section to match final runtime behavior (no bindings-first footgun).
 - [ ] Ensure README and source code show the same recommended React usage path.
 - [ ] Record final DX closure decision + evidence in the Decisions Log after implementation.
 
@@ -138,6 +138,13 @@
 - [ ] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX follow-up API/compatibility cleanup (`UseCardanoErrorConfig.config.hooks` public shape)
+- Decision: Keep `config.hooks` as an optional advanced compatibility override and document the recommended default path as runtime React auto-binding.
+- Reason: Runtime auto-binding removes the default integration footgun, while test harnesses/custom runtimes still need an explicit hook-binding injection path.
+- Impact: Public React API remains backward compatible; standard consumers can omit `config.hooks`, and advanced users retain manual binding control with explicit guidance.
+- Test evidence: `npm test -- test/react.index.test.ts` -> `7/7` passing.
+
 - Date: 2026-02-18
 - Section: DX follow-up execution (React auto-bindings in `useCardanoError`)
 - Decision: Remove the hard manual `config.hooks` requirement by auto-resolving hook bindings from runtime React when available, while keeping `config.hooks` as an explicit compatibility override and preserving `createUseCardanoOp` exports.
