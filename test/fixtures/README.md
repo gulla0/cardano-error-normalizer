@@ -8,3 +8,4 @@ Use these files with the mapping tables in `/Users/gzero/Desktop/cardano-error-h
 - `/Users/gzero/Desktop/cardano-error-handling/test/fixtures/wallet-errors.json`
 - `/Users/gzero/Desktop/cardano-error-handling/test/fixtures/blockfrost-errors.json`
 - `/Users/gzero/Desktop/cardano-error-handling/test/fixtures/node-errors.txt`
+- `/Users/gzero/Desktop/cardano-error-handling/test/fixtures/real-world-errors.json`

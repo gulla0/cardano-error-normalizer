@@ -86,3 +86,14 @@ test("fromBlockfrostError returns null for non-http-like statuses", () => {
   const redirect = fromBlockfrostError({ status_code: 301, error: "Moved", message: "redirect" });
   assert.equal(redirect, null);
 });
+
+test("fromBlockfrostError tolerates sdk-like payloads missing message by falling back to error text", () => {
+  const adapted = fromBlockfrostError({
+    status_code: 400,
+    error: "Bad Request",
+    url: "https://cardano-preprod.blockfrost.io/api/v0/addresses/addr1.../utxos"
+  });
+
+  assert.equal(adapted?.code, "BAD_REQUEST");
+  assert.equal(adapted?.message, "Bad Request");
+});

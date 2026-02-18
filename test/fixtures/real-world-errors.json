@@ -1,0 +1,81 @@
+[
+  {
+    "id": "BF-403",
+    "ctx": { "source": "provider_query", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
+    "err": {
+      "status_code": 403,
+      "error": "Forbidden",
+      "message": "Invalid project token."
+    },
+    "expectedCode": "UNAUTHORIZED"
+  },
+  {
+    "id": "BF-429",
+    "ctx": { "source": "provider_query", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
+    "err": {
+      "status_code": 429,
+      "error": "Project Over Limit",
+      "message": "Usage is over limit."
+    },
+    "expectedCode": "RATE_LIMITED"
+  },
+  {
+    "id": "BF-425",
+    "ctx": { "source": "provider_submit", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
+    "err": {
+      "status_code": 425,
+      "error": "Mempool Full",
+      "message": "Mempool is full, please try resubmitting again later."
+    },
+    "expectedCode": "MEMPOOL_FULL"
+  },
+  {
+    "id": "BF-ADDR-400",
+    "ctx": { "source": "provider_query", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
+    "err": {
+      "name": "BlockfrostServerError",
+      "message": "Invalid address for this network or malformed address format.",
+      "status_code": 400,
+      "error": "Bad Request",
+      "url": "https://cardano-preprod.blockfrost.io/api/v0/addresses/addr1.../utxos?page=8&count=100&order=asc"
+    },
+    "expectedCode": "BAD_REQUEST"
+  },
+  {
+    "id": "M-STAKE-400",
+    "ctx": { "source": "provider_submit", "stage": "submit", "provider": "mesh", "network": "preprod" },
+    "err": {
+      "data": {
+        "error": "Bad Request",
+        "message": "{\"contents\":{\"contents\":{\"contents\":{\"era\":\"ShelleyBasedEraConway\",\"error\":[\"ConwayUtxowFailure (MissingVKeyWitnessesUTXOW (...))\"],\"kind\":\"ShelleyTxValidationError\"},\"tag\":\"TxValidationErrorInCardanoMode\"},\"tag\":\"TxCmdTxSubmitValidationError\"},\"tag\":\"TxSubmitFail\"}",
+        "status_code": 400
+      },
+      "status": 400
+    },
+    "expectedCode": "BAD_REQUEST"
+  },
+  {
+    "id": "M-PPVIEW",
+    "ctx": { "source": "provider_submit", "stage": "submit", "provider": "mesh", "network": "preprod" },
+    "err": "transaction submit error ShelleyTxValidationError ShelleyBasedEraBabbage (ApplyTxError [UtxowFailure (FromAlonzoUtxowFail (PPViewHashesDontMatch ... ))])",
+    "expectedCode": "TX_LEDGER_VALIDATION_FAILED"
+  },
+  {
+    "id": "E-USB-REQUESTDEVICE",
+    "ctx": { "source": "wallet_sign", "stage": "sign", "walletHint": "eternl" },
+    "err": "Failed to execute 'requestDevice' on 'USB': No device selected.",
+    "expectedCode": "UNKNOWN"
+  },
+  {
+    "id": "E-NO-CONNECTION",
+    "ctx": { "source": "provider_query", "stage": "submit", "provider": "eternl", "network": "mainnet" },
+    "err": "Status: No connection",
+    "expectedCode": "UNKNOWN"
+  },
+  {
+    "id": "E-VALUE-SIZE-5000",
+    "ctx": { "source": "mesh_build", "stage": "build", "walletHint": "eternl" },
+    "err": "Maximum value size of 5000 exceeded",
+    "expectedCode": "UNKNOWN"
+  }
+]

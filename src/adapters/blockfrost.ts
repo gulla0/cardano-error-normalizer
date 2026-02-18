@@ -102,14 +102,13 @@ function extractBlockfrostShape(err: unknown): BlockfrostShape | null {
     if (typeof error !== "string" || error.length === 0) {
       continue;
     }
-    if (typeof message !== "string" || message.length === 0) {
-      continue;
-    }
+    const normalizedMessage =
+      typeof message === "string" && message.length > 0 ? message : error;
 
     return {
       statusCode,
       error,
-      message
+      message: normalizedMessage
     };
   }
 

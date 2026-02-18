@@ -107,8 +107,8 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Human Task 2 - collect real-world Mesh + Blockfrost + Eternl error payload samples`
-- Blockers: `Waiting on Human Task 2 payload artifacts`
+- Current task: `Human Task 3 - confirm v0.1.0 release decision and timing window`
+- Blockers: `Waiting on Human Task 3 approval inputs`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -201,10 +201,16 @@
 - Reason: Close the remaining agent-owned post-MVP documentation deliverable and provide a stable release-history anchor before human-gated real-world fixture expansion.
 - Impact: MVP definition-of-done changelog requirement is now satisfied and release discussion can reference a concrete taxonomy snapshot.
 
+- Date: 2026-02-18
+- Section: Post-MVP real-world payload hardening
+- Decision: Add fixture-backed regression coverage for nine user-provided Mesh + Blockfrost + Eternl payloads and harden Blockfrost parsing to accept SDK-style `status_code` + `error` payloads when `message` is absent.
+- Reason: Human Task 2 delivered real-world samples including a Blockfrost SDK shape that omitted `message`; fixture-backed regression locking was required before moving to release approval.
+- Impact: Regression protection now includes real-world payloads while preserving deterministic MVP mappings; suite increased to 23/23 passing tests.
+
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after syncing progress state; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Result: Pass (23/23 tests)
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added `test/real-world-payloads.test.ts` backed by `test/fixtures/real-world-errors.json` for nine user-provided payloads; verified new Blockfrost SDK-like 400 branch without `message`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -222,7 +228,7 @@
 - [x] Prepare package publish readiness (`package.json` metadata, exports, types/build flow, release files).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
-- [ ] Add regression fixtures/tests for any newly observed real-world errors.
+- [x] Add regression fixtures/tests for any newly observed real-world errors.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
@@ -251,7 +257,11 @@ Task 2 (human):
   - at least 5 raw failures (wallet, provider, node-mixed if available)
   - context per sample (`source`, `stage`, network, wallet/provider hints)
   - expected behavior if known
-- Status: `Pending`
+- Status: `Completed`
+- Received:
+  - Artifact: `/Users/gzero/Desktop/cardano-error-handling/error-payload-examples.md`
+  - Coverage: 9 samples (`BF-403`, `BF-429`, `BF-425`, `BF-ADDR-400`, `M-STAKE-400`, `M-PPVIEW`, `E-USB-REQUESTDEVICE`, `E-NO-CONNECTION`, `E-VALUE-SIZE-5000`)
+  - Captured by agent in regression fixture: `/Users/gzero/Desktop/cardano-error-handling/test/fixtures/real-world-errors.json`
 - Needed by agent to add regression fixtures and validate mappings.
 
 Task 3 (human):
