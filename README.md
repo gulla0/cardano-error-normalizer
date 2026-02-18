@@ -127,7 +127,20 @@ The hook provides `loading`, `data`, `error`, `run`, `normalize`, and `reset`, a
 
 `@gulla0/cardano-error-normalizer/react` requires a React runtime (`peerDependencies.react >=16.8.0`). Non-React consumers should import only the root package entrypoint.
 
-`config.hooks` is still supported as an advanced compatibility override (for custom runtimes/test harnesses), but standard React usage should rely on the default runtime auto-binding path.
+Default hook auto-binding resolves `useState`/`useCallback` from `globalThis.React` when available. If your runtime does not expose React globally, pass `config.hooks` explicitly (advanced compatibility mode):
+
+```ts
+import { useCallback, useState } from "react";
+import { useCardanoError } from "@gulla0/cardano-error-normalizer/react";
+
+const tx = useCardanoError({
+  operation: submitTx,
+  defaults: { source: "provider_submit", stage: "submit" },
+  config: {
+    hooks: { useState, useCallback }
+  }
+});
+```
 
 ## Migration: Manual try/catch -> Wrapper/Helper
 

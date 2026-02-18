@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `DX follow-up React compatibility cleanup`
-- Current task: `Agent-owned: README/source recommended-usage alignment + final DX decision log`
+- Current task: `Agent-owned: release-readiness follow-up for DX fixes`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -129,8 +129,8 @@
 
 ### D) Documentation + Progress Alignment
 - [x] Update README React section to match final runtime behavior (no bindings-first footgun).
-- [ ] Ensure README and source code show the same recommended React usage path.
-- [ ] Record final DX closure decision + evidence in the Decisions Log after implementation.
+- [x] Ensure README and source code show the same recommended React usage path.
+- [x] Record final DX closure decision + evidence in the Decisions Log after implementation.
 
 ### E) Release Readiness for DX Fixes
 - [ ] If API surface changes, update versioning/release notes accordingly.
@@ -138,6 +138,13 @@
 - [ ] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX follow-up documentation/progress alignment closure
+- Decision: Align React README guidance with source runtime behavior by documenting the exact default hook auto-binding path (`globalThis.React`) and keeping `config.hooks` as the advanced compatibility fallback when runtime globals are unavailable.
+- Reason: The remaining open item in section D required removing ambiguity between docs and implementation so the recommended `useCardanoError` path reflects real runtime expectations.
+- Impact: Section D is now complete, React usage guidance is source-accurate, and active work can move to section E release-readiness tasks.
+- Test evidence: `npm test` -> `69/69` passing.
+
 - Date: 2026-02-18
 - Section: DX follow-up test coverage closure (full validation gates)
 - Decision: Execute and record full repository validation gates after React DX changes: `npm test`, `npm run typecheck`, `npm run build`.
