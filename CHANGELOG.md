@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [Unreleased]
+## [0.2.0] - 2026-02-18
 
 ### Added
 - Smart normalization pipeline via `createSmartNormalizer` with message matchers, resolution hint attachment, optional trace parsing, and guarded debug logging.
