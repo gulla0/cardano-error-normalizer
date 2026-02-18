@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { executeWithSafety, useCardanoError } from "../src/react/index.ts";
-import type { HookBindings } from "../src/react/useCardanoOp.ts";
-import type { UseCardanoOpResult } from "../src/react/useCardanoOp.ts";
+import { createUseCardanoOp, executeWithSafety, useCardanoError } from "../src/react/index.ts";
+import type { HookBindings, UseCardanoOpResult } from "../src/react/index.ts";
 
 function createHookHarness<TArgs extends unknown[], TData>(
   operation: (...args: TArgs) => Promise<TData>
@@ -71,6 +70,10 @@ test("useCardanoError drives hook state using config-style API", async () => {
   assert.equal(hook.loading, false);
   assert.equal(hook.data, "ok:abc");
   assert.equal(hook.error, undefined);
+});
+
+test("react index re-exports createUseCardanoOp for compatibility", () => {
+  assert.equal(typeof createUseCardanoOp, "function");
 });
 
 test("executeWithSafety normalizes thrown errors and calls onError", async () => {

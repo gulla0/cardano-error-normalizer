@@ -11,8 +11,8 @@
       "import": "./dist/index.js"
     },
     "./react": {
-      "types": "./dist/react/useCardanoOp.d.ts",
-      "import": "./dist/react/useCardanoOp.js"
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js"
     }
   },
   "types": "./dist/index.d.ts",

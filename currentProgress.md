@@ -107,10 +107,16 @@
 
 ## Current Build Focus
 - Active section: `DX v2 blueprint implementation`
-- Current task: `DX v2 align package exports for direct react subpath`
+- Current task: `DX v2 add coverage for remaining matcher/debug/wrapper/react transitions`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX v2 React subpath export alignment
+- Decision: Point package subpath `./react` to `dist/react/index.*` and make `src/react/index.ts` re-export `createUseCardanoOp` types/functions for compatibility.
+- Reason: Close the next agent-owned packaging section so direct React APIs (`useCardanoError`, `executeWithSafety`) are reachable through the published subpath without dropping existing `createUseCardanoOp` usage.
+- Impact: Optional React surface is now consolidated behind one barrel entrypoint, and peer strategy remains framework-agnostic because no `react` dependency/peer dependency was introduced in the core package metadata.
+
 - Date: 2026-02-18
 - Section: DX v2 direct React entrypoint surface
 - Decision: Add `src/react/index.ts` with `useCardanoError(config)` as a config-driven hook wrapper over `createUseCardanoOp`, plus `executeWithSafety(operation, options)` for normalized async boundaries outside provider proxies.
@@ -299,8 +305,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 41/41 locally)
-- Notes: Added passing `test/react.index.test.ts` coverage for `useCardanoError(config)` state transitions and `executeWithSafety` normalized rethrow + callback behavior.
+- Result: Pass (`npm test` 42/42 locally; `npm run typecheck` pass)
+- Notes: Added passing compatibility coverage that `src/react/index.ts` re-exports `createUseCardanoOp`, and verified `./react` subpath export target migration compiles cleanly.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -333,7 +339,7 @@
 - [x] DX v2: add `src/core/normalize.ts` as the central smart normalizer (message extraction, matcher strategy, hint attachment, debug console group logs).
 - [x] DX v2: wire `withErrorSafety` to new normalizer/config contract and ensure normalized throws for wrapped provider methods.
 - [x] DX v2: add React direct hook entrypoint `src/react/index.ts` with `useCardanoError(config?)` and `executeWithSafety`.
-- [ ] DX v2: align package exports for subpath imports (`./react`) and verify peer dependency strategy for optional React usage.
+- [x] DX v2: align package exports for subpath imports (`./react`) and verify peer dependency strategy for optional React usage.
 - [ ] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
 - [ ] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
 - [ ] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.

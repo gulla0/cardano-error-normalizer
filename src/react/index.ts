@@ -6,6 +6,12 @@ import {
   type HookBindings,
   type UseCardanoOpResult
 } from "./useCardanoOp.ts";
+export {
+  createUseCardanoOp,
+  type HookBindings,
+  type UseCardanoOpOptions,
+  type UseCardanoOpResult
+} from "./useCardanoOp.ts";
 
 export interface UseCardanoErrorConfig<TArgs extends unknown[], TData> {
   bindings: HookBindings;
