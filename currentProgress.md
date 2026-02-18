@@ -107,10 +107,16 @@
 
 ## Current Build Focus
 - Active section: `DX modernization`
-- Current task: `Update README with DX-first integration path and migration examples`
+- Current task: `Run real-time integration testing against Mesh + Blockfrost + Eternl stack`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX README modernization
+- Decision: Rework README integration guidance around `withErrorSafety` as the default path, with explicit migration examples and optional React subpath usage via `createUseCardanoOp`.
+- Reason: The next agent-owned DX task required removing manual `try/catch + normalize` boilerplate from the recommended path and documenting the stable wrapper/hook ergonomics.
+- Impact: Documentation now matches the implemented DX surface (`globalNormalizer`, `normalizeError`, `withErrorSafety`, `./react` entrypoint), reducing integration friction for new adopters.
+
 - Date: 2026-02-18
 - Section: DX React packaging scope
 - Decision: Keep the core package framework-agnostic and deliver React helpers via a sibling package/entrypoint instead of adding a React peer dependency to the core package.
@@ -283,7 +289,7 @@
 - [x] Add tests for proxy behavior: function wrapping, non-function property passthrough, context metadata propagation, and preserved return values.
 - [x] Add `src/react/useCardanoOp.ts` and type-safe hook tests for loading/data/error/reset behavior with normalized throw-through.
 - [x] Decide packaging model for React hook delivery (`react` peer dependency in main package vs dedicated optional entrypoint).
-- [ ] Update README with DX-first integration path and migration examples from manual `try/catch` to wrappers/hooks.
+- [x] Update README with DX-first integration path and migration examples from manual `try/catch` to wrappers/hooks.
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
 - [x] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.

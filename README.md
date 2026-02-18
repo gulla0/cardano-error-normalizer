@@ -43,6 +43,111 @@ try {
 }
 ```
 
+## DX-First Integration Path
+
+Use the package in this order to reduce callsite boilerplate:
+
+1. `withErrorSafety(...)` for provider/wallet objects so async method failures are normalized automatically.
+2. `normalizeError(...)` or `globalNormalizer.normalize(...)` for one-off/manual boundaries.
+3. `createUseCardanoOp(...)` from `@gulla0/cardano-error-normalizer/react` for UI operation state in React apps.
+
+### Provider/Wallet Wrapper (Recommended)
+
+```ts
+import { withErrorSafety } from "@gulla0/cardano-error-normalizer";
+
+const safeProvider = withErrorSafety(rawProvider, {
+  ctx: (method) => ({
+    source: method === "submitTx" ? "provider_submit" : "provider_query",
+    stage: method === "submitTx" ? "submit" : "build",
+    provider: "blockfrost",
+    network: "preprod"
+  }),
+  onError(normalized, details) {
+    console.error("normalized provider error", {
+      method: details.method,
+      code: normalized.code,
+      meta: normalized.meta
+    });
+  }
+});
+
+await safeProvider.submitTx(txCborHex);
+```
+
+`withErrorSafety` rethrows `CardanoAppError` and annotates `meta.safeProviderWrapped=true` and `meta.safeProviderMethod`.
+
+### React Hook Entrypoint (Optional)
+
+The core package stays framework-agnostic. React usage is available from the `./react` subpath:
+
+```ts
+import { useCallback, useState } from "react";
+import { createUseCardanoOp } from "@gulla0/cardano-error-normalizer/react";
+
+const useCardanoOp = createUseCardanoOp({ useState, useCallback });
+
+export function useSubmitTx(submitTx: (cborHex: string) => Promise<string>) {
+  return useCardanoOp(submitTx, {
+    ctx: {
+      source: "provider_submit",
+      stage: "submit",
+      provider: "blockfrost",
+      network: "preprod"
+    }
+  });
+}
+```
+
+The hook provides `loading`, `data`, `error`, `run`, and `reset`, and rethrows normalized `CardanoAppError` from `run(...)`.
+
+## Migration: Manual try/catch -> Wrapper/Helper
+
+Before:
+
+```ts
+try {
+  const txHash = await provider.submitTx(txCborHex);
+  return txHash;
+} catch (err) {
+  const normalized = normalizer.normalize(err, {
+    source: "provider_submit",
+    stage: "submit",
+    provider: "blockfrost",
+    network: "preprod"
+  });
+  logger.error({ code: normalized.code, raw: normalized.raw });
+  throw normalized;
+}
+```
+
+After:
+
+```ts
+const safeProvider = withErrorSafety(provider, {
+  ctx: {
+    source: "provider_submit",
+    stage: "submit",
+    provider: "blockfrost",
+    network: "preprod"
+  }
+});
+
+const txHash = await safeProvider.submitTx(txCborHex);
+```
+
+For non-proxy boundaries:
+
+```ts
+import { normalizeError } from "@gulla0/cardano-error-normalizer";
+
+try {
+  await doWork();
+} catch (err) {
+  throw normalizeError(err, { source: "provider_query", stage: "build" });
+}
+```
+
 Run tests:
 
 ```bash
