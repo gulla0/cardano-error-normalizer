@@ -48,3 +48,20 @@ test("default adapter order prefers wallet mapping over blockfrost when both sha
   assert.equal(result.source, "wallet_sign");
   assert.equal(result.stage, "sign");
 });
+
+test("wallet API -2 maps to submit failure when submit context is provided", () => {
+  const normalizer = createNormalizer();
+  const payload = {
+    code: -2,
+    info: "unknown error submitTx"
+  };
+
+  const result = normalizer.normalize(payload, {
+    source: "wallet_submit",
+    stage: "submit"
+  });
+
+  assert.equal(result.code, "WALLET_SUBMIT_FAILURE");
+  assert.equal(result.source, "wallet_submit");
+  assert.equal(result.stage, "submit");
+});

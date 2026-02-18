@@ -1,4 +1,9 @@
-import type { CardanoAppError, ErrorSource, ErrorStage } from "../types.ts";
+import type {
+  CardanoAppError,
+  ErrorSource,
+  ErrorStage,
+  NormalizeContext
+} from "../types.ts";
 
 interface WalletErrorShape {
   code: number;
@@ -78,7 +83,10 @@ const POSITIVE_CODE_INFO_MAP: Record<string, WalletMapping> = {
   }
 };
 
-export function fromWalletError(err: unknown): Partial<CardanoAppError> | null {
+export function fromWalletError(
+  err: unknown,
+  ctx?: NormalizeContext
+): Partial<CardanoAppError> | null {
   const paginateError = extractPaginateError(err);
   if (paginateError !== null) {
     return {
@@ -99,7 +107,7 @@ export function fromWalletError(err: unknown): Partial<CardanoAppError> | null {
     return null;
   }
 
-  const apiMapping = API_ERROR_MAP[walletError.code];
+  const apiMapping = resolveApiMapping(walletError, ctx);
   if (apiMapping !== undefined) {
     return buildWalletResult(apiMapping, walletError, err);
   }
@@ -131,6 +139,32 @@ export function fromWalletError(err: unknown): Partial<CardanoAppError> | null {
   }
 
   return null;
+}
+
+function resolveApiMapping(
+  walletError: WalletErrorShape,
+  ctx?: NormalizeContext
+): WalletMapping | undefined {
+  const apiMapping = API_ERROR_MAP[walletError.code];
+  if (apiMapping === undefined) {
+    return undefined;
+  }
+
+  if (
+    walletError.code === -2 &&
+    (ctx?.source === "wallet_submit" ||
+      ctx?.stage === "submit" ||
+      infoLooksLikeSubmitFailure(walletError.info))
+  ) {
+    return {
+      code: "WALLET_SUBMIT_FAILURE",
+      source: "wallet_submit",
+      stage: "submit",
+      severity: "error"
+    };
+  }
+
+  return apiMapping;
 }
 
 function buildWalletResult(
@@ -336,4 +370,9 @@ function resolveInfoKeys(info: string): string[] {
   }
 
   return [...keys];
+}
+
+function infoLooksLikeSubmitFailure(info: string): boolean {
+  const normalized = info.toLowerCase().replace(/[^a-z]/g, "");
+  return normalized.includes("submittx");
 }

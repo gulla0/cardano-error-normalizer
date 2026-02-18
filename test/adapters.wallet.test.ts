@@ -86,3 +86,19 @@ test("fromWalletError returns null for unknown wallet code/info combination", ()
   const adapted = fromWalletError({ code: 9, info: "SomeFutureExtension" });
   assert.equal(adapted, null);
 });
+
+test("fromWalletError maps APIError -2 to submit failure in submit context", () => {
+  const adapted = fromWalletError(
+    { code: -2, info: "unknown error submitTx" },
+    { source: "wallet_submit", stage: "submit" }
+  );
+
+  assert.equal(adapted?.code, "WALLET_SUBMIT_FAILURE");
+  assert.equal(adapted?.source, "wallet_submit");
+  assert.equal(adapted?.stage, "submit");
+});
+
+test("fromWalletError maps APIError -2 submitTx info to submit failure without explicit context", () => {
+  const adapted = fromWalletError({ code: -2, info: "unknown error submitTx" });
+  assert.equal(adapted?.code, "WALLET_SUBMIT_FAILURE");
+});

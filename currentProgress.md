@@ -112,6 +112,13 @@
 
 ## Decisions Log
 - Date: 2026-02-18
+- Section: Real-time verification follow-up (wallet submit CIP-30 APIError disambiguation)
+- Decision: Treat wallet `APIError` `code=-2` as `WALLET_SUBMIT_FAILURE` when submit intent is explicit (`ctx.source="wallet_submit"` or `ctx.stage="submit"`) or when `info` indicates `submitTx`; preserve existing `WALLET_INTERNAL` mapping for non-submit contexts.
+- Reason: Real-stack validation showed submit-path CIP-30 payloads (`code=-2`, `info="unknown error submitTx"`) were being classified as internal sign errors, which is too broad for submit UX/retry behavior.
+- Impact: Submit failures now classify as `WALLET_SUBMIT_FAILURE` in submit contexts while existing sign/internal mappings stay stable.
+- Test evidence: `npm test` -> `68/68` passing (new wallet adapter + normalizer integration assertions), `npm run typecheck` -> passing.
+
+- Date: 2026-02-18
 - Section: Verification remediation execution checklist #7 (README alignment)
 - Decision: Update `README.md` mapping docs to include `DataSignError` + `PaginateError` wallet rows, add explicit Blockfrost key-based parsing note (`status_code/error/message` order agnostic), and add preset usage example showing Mesh `fetchAddressUTxOs` versus CIP-30 `getUtxos`.
 - Reason: Close the final agent-owned verification checklist section and align docs/examples with implemented preset and adapter behavior.
@@ -378,8 +385,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 65/65, `npm run typecheck`)
-- Notes: Added verification fixture packs (`test/fixtures/verification/*.json`) and a fixture-driven cross-adapter regression suite in `test/verification.fixtures.test.ts`.
+- Result: Pass (`npm test` 68/68, `npm run typecheck`)
+- Notes: Added submit-context regression coverage for wallet `APIError` `code=-2` mapping to `WALLET_SUBMIT_FAILURE` (`test/adapters.wallet.test.ts`, `test/normalizer.integration.test.ts`).
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
