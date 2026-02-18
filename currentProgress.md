@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `DX follow-up React compatibility cleanup`
-- Current task: `Agent-owned: run full validation gates for React DX closure`
+- Current task: `Agent-owned: README/source recommended-usage alignment + final DX decision log`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -125,7 +125,7 @@
 ### C) Test Coverage for React DX Closure
 - [x] Add/adjust tests validating `useCardanoError` works without `config.hooks`.
 - [x] Add regression test ensuring compatibility behavior for `createUseCardanoOp` remains intact.
-- [ ] Run full gates after React changes: `npm test`, `npm run typecheck`, `npm run build`.
+- [x] Run full gates after React changes: `npm test`, `npm run typecheck`, `npm run build`.
 
 ### D) Documentation + Progress Alignment
 - [x] Update README React section to match final runtime behavior (no bindings-first footgun).
@@ -138,6 +138,13 @@
 - [ ] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX follow-up test coverage closure (full validation gates)
+- Decision: Execute and record full repository validation gates after React DX changes: `npm test`, `npm run typecheck`, `npm run build`.
+- Reason: The remaining unchecked item in section C required proving that React auto-binding and compatibility updates hold under full project gates, not only focused tests.
+- Impact: Section C is now complete with repository-wide evidence, and the next execution target moves to documentation/progress alignment tasks.
+- Test evidence: `npm test` -> `69/69` passing; `npm run typecheck` -> passing; `npm run build` -> passing.
+
 - Date: 2026-02-18
 - Section: DX follow-up API/compatibility cleanup (`UseCardanoErrorConfig.config.hooks` public shape)
 - Decision: Keep `config.hooks` as an optional advanced compatibility override and document the recommended default path as runtime React auto-binding.
