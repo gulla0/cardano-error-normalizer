@@ -112,6 +112,13 @@
 
 ## Decisions Log
 - Date: 2026-02-18
+- Section: DX status fact-check reconciliation
+- Decision: Validate the external DX status write-up against the live repository and mark stale claims as corrected in-project state.
+- Reason: The referenced summary correctly captured earlier state but no longer reflects current `main`; several previously "not done" DX items are now implemented.
+- Impact: Team tracking should treat these items as complete: React peer dependency is present, root API exports preset helpers, README documents direct `useCardanoError` usage and presets, and normalizer instances support scoped defaults via `createNormalizer({ defaults })`/`withDefaults(...)`. Remaining gap is React auto-hook imports (bindings still manual).
+- Test evidence: File-level verification against `package.json`, `README.md`, `src/index.ts`, `src/react/index.ts`, `src/core/normalize.ts`, `src/config/errors.ts`, and `src/utils/safeProvider.ts`.
+
+- Date: 2026-02-18
 - Section: Post-publish documentation and verification closeout
 - Decision: Reconcile progress state with shipped reality by closing the release-readiness section and moving active focus to post-release maintenance.
 - Reason: `@gulla0/cardano-error-normalizer@0.2.0` is already published and live verification is complete, but this file still listed pending release-readiness steps.
