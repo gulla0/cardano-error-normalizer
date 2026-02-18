@@ -107,10 +107,17 @@
 
 ## Current Build Focus
 - Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Execution checklist #4 pending: inferErrorMeta enrichment + meta-only merge discipline; checklist #3 preset separation completed`
+- Current task: `Execution checklist #5 pending: taxonomy + wallet adapter updates (DataSign/Paginate/CIP-95 metadata); checklist #4 meta inference completed`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification remediation execution checklist #4 (meta inference enrichment)
+- Decision: Add `src/core/analyzers.ts` with `inferErrorMeta(err)` heuristics for key-based Blockfrost detection (`status_code` in nested shapes), CIP numeric wallet detection (`code` + `info`), and node ledger-pattern strings; update `normalizeError` to merge metadata as `meta: { ...core.meta, ...heur }` while preserving explicit caller provenance for `source`/`stage`.
+- Reason: Close the checklist requirement to enrich diagnostics through `meta` only without mutating explicit context provenance from caller inputs.
+- Impact: `normalizeError` now consistently adds inferred diagnostics (`inferredProvider`, `inferredKind`, `httpStatus`, `blockfrostReason`) on top of adapter metadata and keeps caller-supplied provenance stable.
+- Test evidence: `npm test` -> `61/61` passing (new `test/core.analyzers.test.ts` + `normalizeError` merge/provenance assertions), `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: Verification remediation execution checklist #3 (preset layer separation)
 - Decision: Add `meshProviderPreset` (`src/presets/meshProvider.ts`) and `cip30WalletPreset` (`src/presets/cip30Wallet.ts`) as thin `withErrorSafety` wrappers with method-to-context mapping (`submitTx` vs `fetchAddressUTxOs` for Mesh, `getUtxos/signTx/signData/submitTx` for CIP-30), then export both from root API.
@@ -350,8 +357,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 56/56)
-- Notes: Added preset-layer tests at `test/presets.test.ts` for Mesh and CIP-30 method-context mapping plus fallback behavior.
+- Result: Pass (`npm test` 61/61, `npm run typecheck`)
+- Notes: Added analyzer tests at `test/core.analyzers.test.ts` and `normalizeError` merge/provenance coverage in `test/normalizer.phase1.test.ts`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -391,7 +398,7 @@
 - [ ] Execute verification remediation checklist in `verification-followup-instructions.md`.
 - [ ] Implement missing wallet families from verification report (`DataSignError`, `PaginateError`) and add required taxonomy codes.
 - [x] Align preset separation and naming (`meshProviderPreset` vs `cip30WalletPreset`) per verification report.
-- [ ] Add/extend `inferErrorMeta` and enforce meta-only enrichment merge behavior.
+- [x] Add/extend `inferErrorMeta` and enforce meta-only enrichment merge behavior.
 - [ ] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
 - [ ] Update README tables/examples for verification-aligned mappings and preset method names.
 - [ ] Run verification gate after implementation: `npm test`, `npm run typecheck`, `npm pack --dry-run`.

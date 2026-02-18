@@ -169,3 +169,36 @@ test("normalizeError accepts optional context and one-off config", () => {
   assert.equal(normalized.code, "TIMEOUT");
   assert.match(normalized.fingerprint ?? "", /^[a-f0-9]{16}$/);
 });
+
+test("normalizeError enriches meta via inference without dropping adapter meta", () => {
+  const normalized = normalizeError(
+    {
+      response: {
+        data: {
+          status_code: 418,
+          error: "IP has been auto-banned",
+          message: "Too many requests"
+        }
+      }
+    },
+    { source: "provider_query", stage: "build" }
+  );
+
+  assert.equal(normalized.code, "FORBIDDEN");
+  assert.equal(normalized.meta?.blockfrostStatusCode, 418);
+  assert.equal(normalized.meta?.blockfrostReason, "auto_banned");
+  assert.equal(normalized.meta?.inferredProvider, "blockfrost");
+  assert.equal(normalized.meta?.inferredKind, "blockfrost_http");
+  assert.equal(normalized.meta?.httpStatus, 418);
+});
+
+test("normalizeError preserves explicit caller provenance for source and stage", () => {
+  const normalized = normalizeError(
+    { code: -3, info: "Refused" },
+    { source: "provider_submit", stage: "submit" }
+  );
+
+  assert.equal(normalized.code, "WALLET_REFUSED");
+  assert.equal(normalized.source, "provider_submit");
+  assert.equal(normalized.stage, "submit");
+});
