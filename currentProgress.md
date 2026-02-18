@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `GitHub publish handoff and remote push`
+- Current task: `Real-time integration testing against Mesh + Blockfrost + Eternl stack`
 - Blockers: `none`
 
 ## Decisions Log
@@ -231,10 +231,16 @@
 - Reason: Repository has no configured git remote yet, so GitHub publication requires a human-owned remote selection step before agent push execution.
 - Impact: Push ownership and execution gates are now clear, with CI verification included as part of completion.
 
+- Date: 2026-02-18
+- Section: GitHub repository push execution
+- Decision: Configure `origin` as `https://github.com/gulla0/cardano-error-normalizer.git`, push `main`, and verify CI run status via GitHub Actions API.
+- Reason: Human Task 4 provided remote URL, confirmed branch target (`main`), and approved push execution.
+- Impact: Remote publication handoff is complete and CI is verified on the pushed head commit.
+
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm run typecheck`, `npm test` 23/23, `npm run build`, `npm pack --dry-run`)
-- Notes: Added TypeScript compiler contract and dist emission; validated publish artifact contents via `npm pack --dry-run` (using temporary npm cache path due local cache permission issue).
+- Result: Pass (`npm test` 23/23; GitHub Actions CI run #1 `success` on pushed `main` head `29a1f9f61e20360b8db5933f8b5b9eb47e958c9c`)
+- Notes: Verified CI trigger URL `https://github.com/gulla0/cardano-error-normalizer/actions/runs/22122385189`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -252,7 +258,7 @@
 - [x] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
-- [ ] Push repository to GitHub remote and verify Actions CI run on latest commit.
+- [x] Push repository to GitHub remote and verify Actions CI run on latest commit.
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
 - [x] Add `npm run typecheck` (no special hacks) and confirm pass.
 - [x] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
@@ -308,16 +314,17 @@ Task 3 (human):
 
 Task 4 (human):
 - Create/confirm the target GitHub repository and provide the remote URL (SSH or HTTPS), then approve push execution.
-- Status: `Pending`
-- Expected artifact:
-  - `gitRemoteUrl`: e.g. `git@github.com:<owner>/cardano-error-normalizer.git` or `https://github.com/<owner>/cardano-error-normalizer.git`
-  - push target branch confirmation (`main`)
+- Status: `Completed`
+- Received:
+  - `gitRemoteUrl`: `https://github.com/gulla0/cardano-error-normalizer.git`
+  - push target branch confirmation: `main`
+  - push approval: `yes` (received 2026-02-18)
 - Needed by agent to configure `origin`, push commits, and verify CI trigger links.
 
 Task 4 (agent, after human Task 4):
 - Configure `origin` remote, push `main`, and confirm GitHub Actions CI is triggered for the latest commit.
-- Status: `Pending`
+- Status: `Completed`
 - Completion gate:
-  - `git remote -v` shows `origin`.
-  - `git push -u origin main` succeeds.
-  - CI run URL captured in this file.
+  - [x] `git remote -v` shows `origin`.
+  - [x] `git push -u origin main` succeeds.
+  - [x] CI run URL captured in this file (`https://github.com/gulla0/cardano-error-normalizer/actions/runs/22122385189`).
