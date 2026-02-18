@@ -5,13 +5,13 @@ A small TypeScript library that normalizes heterogeneous Cardano stack errors in
 ## Install
 
 ```bash
-npm install @your-npm-scope/cardano-error-normalizer
+npm install cardano-error-normalizer
 ```
 
 ## Quickstart
 
 ```ts
-import { createNormalizer } from "@your-npm-scope/cardano-error-normalizer";
+import { createNormalizer } from "cardano-error-normalizer";
 
 const normalizer = createNormalizer({ includeFingerprint: true });
 
@@ -47,6 +47,13 @@ Run tests:
 
 ```bash
 npm test
+```
+
+Type-check and build:
+
+```bash
+npm run typecheck
+npm run build
 ```
 
 ## Default Adapter Order

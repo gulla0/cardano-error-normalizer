@@ -107,8 +107,8 @@
 
 ## Current Build Focus
 - Active section: `Post-MVP hardening`
-- Current task: `Agent Task - remediate publish blockers from Human Task 3 decision`
-- Blockers: `v0.1.0 publish hold until package scope, TypeScript consumer contract, and docs path hygiene blockers are fixed`
+- Current task: `Agent Task - publish blocker remediation completed; awaiting final human publish approval`
+- Blockers: `none (technical blockers resolved); pending human go/no-go for final npm package scope`
 
 ## Decisions Log
 - Date: 2026-02-17
@@ -213,10 +213,16 @@
 - Reason: Human approval response confirmed MVP feature scope is acceptable while identifying packaging/distribution blockers that could break consumers or leak local-path references.
 - Impact: Release is now explicitly gated by publish-readiness remediation; next agent-owned work is packaging hardening and docs cleanup before final publish approval.
 
+- Date: 2026-02-18
+- Section: Post-MVP publish blocker remediation
+- Decision: Replace placeholder package name with publishable default `cardano-error-normalizer`, add TypeScript contract (`tsconfig.json`, `tsconfig.build.json`, `typescript` dev dependency, emitted `dist` JS + `.d.ts` exports), and clean absolute local paths from fixture docs.
+- Reason: Resolve all technical blockers identified in Human Task 3 while preserving ESM-only packaging and existing runtime behavior.
+- Impact: Publish gates now pass (`npm run typecheck`, `npm test`, `npm pack --dry-run`), and package tarball contains only expected release files + built artifacts.
+
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (23/23 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; added `test/real-world-payloads.test.ts` backed by `test/fixtures/real-world-errors.json` for nine user-provided payloads; verified new Blockfrost SDK-like 400 branch without `message`.
+- Result: Pass (`npm run typecheck`, `npm test` 23/23, `npm run build`, `npm pack --dry-run`)
+- Notes: Added TypeScript compiler contract and dist emission; validated publish artifact contents via `npm pack --dry-run` (using temporary npm cache path due local cache permission issue).
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -231,12 +237,12 @@
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
 - [x] Add a repository CI workflow (`.github/workflows`) to enforce `npm test` on push/PR.
-- [ ] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
+- [x] Finalize package publish readiness blockers from Human Task 3 (`package` scope/name, TS build/types contract, doc path cleanup).
 - [x] Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
 - [ ] Run real-time integration testing against Mesh + Blockfrost + Eternl stack.
 - [x] Add regression fixtures/tests for any newly observed real-world errors.
-- [ ] Add `npm run typecheck` (no special hacks) and confirm pass.
-- [ ] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
+- [x] Add `npm run typecheck` (no special hacks) and confirm pass.
+- [x] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
@@ -267,9 +273,9 @@ Task 2 (human):
   - expected behavior if known
 - Status: `Completed`
 - Received:
-  - Artifact: `/Users/gzero/Desktop/cardano-error-handling/error-payload-examples.md`
+  - Artifact: `error-payload-examples.md`
   - Coverage: 9 samples (`BF-403`, `BF-429`, `BF-425`, `BF-ADDR-400`, `M-STAKE-400`, `M-PPVIEW`, `E-USB-REQUESTDEVICE`, `E-NO-CONNECTION`, `E-VALUE-SIZE-5000`)
-  - Captured by agent in regression fixture: `/Users/gzero/Desktop/cardano-error-handling/test/fixtures/real-world-errors.json`
+  - Captured by agent in regression fixture: `test/fixtures/real-world-errors.json`
 - Needed by agent to add regression fixtures and validate mappings.
 
 Task 3 (human):
