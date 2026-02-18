@@ -112,6 +112,13 @@
 
 ## Decisions Log
 - Date: 2026-02-18
+- Section: Post-release maintenance kickoff (runtime fixture provenance contract)
+- Decision: Require `real-world-errors` fixtures to include provenance metadata (`observedAt`, `capturedFrom`) and enforce unique fixture IDs via `test/real-world-payloads.test.ts`.
+- Reason: Active maintenance work needs deterministic tracking for when/where runtime payload samples were observed, so future mapping changes can be audited against concrete evidence.
+- Impact: New runtime fixture additions now fail fast if provenance fields are missing or IDs collide, improving regression hygiene during ongoing post-release monitoring.
+- Test evidence: `npm test` -> `68/68` passing; `npm run typecheck` -> passing.
+
+- Date: 2026-02-18
 - Section: DX status fact-check reconciliation
 - Decision: Validate the external DX status write-up against the live repository and mark stale claims as corrected in-project state.
 - Reason: The referenced summary correctly captured earlier state but no longer reflects current `main`; several previously "not done" DX items are now implemented.
@@ -414,7 +421,7 @@
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm test` 68/68, `npm run typecheck`)
-- Notes: Post-publish closeout verification rerun passed; progress state was reconciled to published `0.2.0` status and maintenance-mode next steps.
+- Notes: Added post-release fixture provenance guardrails (`observedAt`, `capturedFrom`, unique `id`) and verified the full suite remains green.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -459,6 +466,7 @@
 - [x] Add verification fixtures and fixture-driven tests for Blockfrost key-based parsing, wallet families, node strings, and mesh wrappers.
 - [x] Update README tables/examples for verification-aligned mappings and preset method names.
 - [x] Run verification gate after implementation: `npm test`, `npm run typecheck`, `npm pack --dry-run`.
+- [x] Post-release maintenance kickoff: enforce provenance metadata and unique IDs for `test/fixtures/real-world-errors.json`.
 
 ## Human Work Queue (One At A Time)
 Execution protocol:

@@ -1,6 +1,8 @@
 [
   {
     "id": "BF-403",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_query", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
     "err": {
       "status_code": 403,
@@ -11,6 +13,8 @@
   },
   {
     "id": "BF-429",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_query", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
     "err": {
       "status_code": 429,
@@ -21,6 +25,8 @@
   },
   {
     "id": "BF-425",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_submit", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
     "err": {
       "status_code": 425,
@@ -31,6 +37,8 @@
   },
   {
     "id": "BF-ADDR-400",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_query", "stage": "submit", "provider": "blockfrost", "network": "preprod" },
     "err": {
       "name": "BlockfrostServerError",
@@ -43,6 +51,8 @@
   },
   {
     "id": "M-STAKE-400",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_submit", "stage": "submit", "provider": "mesh", "network": "preprod" },
     "err": {
       "data": {
@@ -56,24 +66,32 @@
   },
   {
     "id": "M-PPVIEW",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_submit", "stage": "submit", "provider": "mesh", "network": "preprod" },
     "err": "transaction submit error ShelleyTxValidationError ShelleyBasedEraBabbage (ApplyTxError [UtxowFailure (FromAlonzoUtxowFail (PPViewHashesDontMatch ... ))])",
     "expectedCode": "TX_LEDGER_VALIDATION_FAILED"
   },
   {
     "id": "E-USB-REQUESTDEVICE",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "wallet_sign", "stage": "sign", "walletHint": "eternl" },
     "err": "Failed to execute 'requestDevice' on 'USB': No device selected.",
     "expectedCode": "UNKNOWN"
   },
   {
     "id": "E-NO-CONNECTION",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_query", "stage": "submit", "provider": "eternl", "network": "mainnet" },
     "err": "Status: No connection",
     "expectedCode": "UNKNOWN"
   },
   {
     "id": "E-VALUE-SIZE-5000",
+    "observedAt": "2026-02-18",
+    "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "mesh_build", "stage": "build", "walletHint": "eternl" },
     "err": "Maximum value size of 5000 exceeded",
     "expectedCode": "UNKNOWN"

@@ -10,3 +10,9 @@ Use these files with the mapping tables in `mvp.md`:
 - `test/fixtures/node-errors.txt`
 - `test/fixtures/real-world-errors.json`
 - `test/fixtures/verification/*.json`
+
+For `test/fixtures/real-world-errors.json`, each row must include:
+- `id` (unique fixture key)
+- `observedAt` (`YYYY-MM-DD`)
+- `capturedFrom` (source artifact/log reference)
+- `ctx`, `err`, and `expectedCode`
