@@ -110,7 +110,41 @@
 - Current task: `Agent-owned: maintain fixture coverage for newly observed runtime payloads`
 - Blockers: `none`
 
+## DX Follow-up Task Queue (Open)
+
+### A) React Auto-Bindings (Primary Remaining DX Gap)
+- [ ] Replace manual `config.hooks` requirement in `useCardanoError` with direct React hook imports (`useState`, `useCallback`) inside `src/react/*`.
+- [ ] Remove runtime throw path from `defaultHookBindings()` once direct imports are wired.
+- [ ] Keep `createUseCardanoOp` compatibility export for advanced/custom integrations.
+
+### B) API/Compatibility Cleanup
+- [ ] Decide final public shape for `UseCardanoErrorConfig.config.hooks` (remove vs keep as optional compatibility override).
+- [ ] If retained, ensure default path is bindingless and override path is explicitly documented as advanced-only.
+- [ ] Add migration note for consumers currently passing manual hook bindings.
+
+### C) Test Coverage for React DX Closure
+- [ ] Add/adjust tests validating `useCardanoError` works without `config.hooks`.
+- [ ] Add regression test ensuring compatibility behavior for `createUseCardanoOp` remains intact.
+- [ ] Run full gates after React changes: `npm test`, `npm run typecheck`, `npm run build`.
+
+### D) Documentation + Progress Alignment
+- [ ] Update README React section to match final runtime behavior (no bindings-first footgun).
+- [ ] Ensure README and source code show the same recommended React usage path.
+- [ ] Record final DX closure decision + evidence in the Decisions Log after implementation.
+
+### E) Release Readiness for DX Fixes
+- [ ] If API surface changes, update versioning/release notes accordingly.
+- [ ] Run package validation (`npm pack --dry-run`) using `/tmp` npm cache strategy if needed.
+- [ ] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
+
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX follow-up task planning
+- Decision: Add an explicit task queue in `currentProgress.md` for closing the remaining React DX gap (auto-bindings) and dependent validation/doc/release work.
+- Reason: Repository fact-check confirms major DX items are implemented, but runtime React hook bindings still require manual wiring; tracking needs concrete execution tasks rather than a generic note.
+- Impact: Work is now sequenced into implementation, compatibility, testing, docs, and release-readiness tasks to drive the next PR(s) without ambiguity.
+- Test evidence: Planning-only update (no runtime code changes).
+
 - Date: 2026-02-18
 - Section: Post-release maintenance (verification fixture parity with observed/runtime-relevant Blockfrost not-found paths)
 - Decision: Add a dedicated Blockfrost verification fixture row for `404 Not Found` in `test/fixtures/verification/blockfrost.json`.
