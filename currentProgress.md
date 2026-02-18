@@ -112,6 +112,13 @@
 
 ## Decisions Log
 - Date: 2026-02-18
+- Section: Post-release maintenance (verification fixture parity with observed/runtime-relevant Blockfrost not-found paths)
+- Decision: Add a dedicated Blockfrost verification fixture row for `404 Not Found` in `test/fixtures/verification/blockfrost.json`.
+- Reason: The Blockfrost adapter and mapping table already classify `404` as `NOT_FOUND`, but the verification fixture pack did not include an explicit regression row for this status.
+- Impact: Verification fixture coverage now includes the full common Blockfrost 4xx spread used by runtime flows (`400/402/403/404/418/425/429`).
+- Test evidence: `npm test -- test/verification.fixtures.test.ts` -> `4/4` passing.
+
+- Date: 2026-02-18
 - Section: Post-release maintenance (verification fixture parity with observed runtime Blockfrost auth errors)
 - Decision: Add a dedicated Blockfrost verification fixture row for `403 Invalid project token` in `test/fixtures/verification/blockfrost.json`.
 - Reason: The runtime fixture pack already contains observed `BF-403`, but the verification fixture suite lacked this explicit auth-status row.
@@ -428,7 +435,7 @@
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`)
-- Notes: Added `BF_403_INVALID_PROJECT_TOKEN` to `test/fixtures/verification/blockfrost.json` to close parity gap with observed runtime fixture coverage.
+- Notes: Added `BF_404_NOT_FOUND` to `test/fixtures/verification/blockfrost.json`; verification fixture coverage now includes `400/402/403/404/418/425/429/500`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.

@@ -73,6 +73,20 @@
     }
   },
   {
+    "label": "BF_404_NOT_FOUND",
+    "err": {
+      "status_code": 404,
+      "error": "Not Found",
+      "message": "The requested component has not been found."
+    },
+    "expectedCode": "NOT_FOUND",
+    "expectedMeta": {
+      "inferredProvider": "blockfrost",
+      "inferredKind": "blockfrost_http",
+      "httpStatus": 404
+    }
+  },
+  {
     "label": "BF_429_SHUFFLED_NESTED",
     "err": {
       "response": {
