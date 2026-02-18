@@ -107,10 +107,16 @@
 
 ## Current Build Focus
 - Active section: `DX v2 blueprint implementation`
-- Current task: `Implement smart normalization + resolution hints + React subpath + packaging updates`
+- Current task: `DX v2 add src/core/normalize.ts central smart normalizer`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX v2 resolution lookup table
+- Decision: Add `src/core/resolutions.ts` with a deterministic code-to-resolution mapping and `getResolutionForCode(code)` helper that returns a defensive copy of `steps`.
+- Reason: The next agent-owned DX v2 section required a centralized hint source before integrating smart normalization hint attachment.
+- Impact: Resolution hints are now available as reusable package API and can be safely attached without shared mutable state.
+
 - Date: 2026-02-18
 - Section: DX README modernization
 - Decision: Rework README integration guidance around `withErrorSafety` as the default path, with explicit migration examples and optional React subpath usage via `createUseCardanoOp`.
@@ -275,8 +281,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` 31/31 locally; `npm run typecheck` pass)
-- Notes: Added passing core-model coverage in `test/normalizer.phase1.test.ts` for `originalError` preservation and adapter-provided `resolution` payload retention.
+- Result: Pass (`npm test` 33/33 locally; `npm run typecheck` pass)
+- Notes: Added passing `test/core.resolutions.test.ts` coverage for mapped lookup output and defensive-copy behavior in `getResolutionForCode`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -305,7 +311,7 @@
 - [x] Add `npm run typecheck` (no special hacks) and confirm pass.
 - [x] Re-run publish gate checklist (`npm pack`, `npm test`, `npm run typecheck`) before publish.
 - [x] DX v2: expand core error model in `src/types.ts` (`ErrorResolution`, `CardanoAppError.originalError`, `CardanoAppError.resolution`, `NormalizerConfig.debug/parseTraces`).
-- [ ] DX v2: add `src/core/resolutions.ts` lookup table and `getResolutionForCode(code)` helper.
+- [x] DX v2: add `src/core/resolutions.ts` lookup table and `getResolutionForCode(code)` helper.
 - [ ] DX v2: add `src/core/normalize.ts` as the central smart normalizer (message extraction, matcher strategy, hint attachment, debug console group logs).
 - [ ] DX v2: wire `withErrorSafety` to new normalizer/config contract and ensure normalized throws for wrapped provider methods.
 - [ ] DX v2: add React direct hook entrypoint `src/react/index.ts` with `useCardanoError(config?)` and `executeWithSafety`.
