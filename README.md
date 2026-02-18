@@ -49,7 +49,7 @@ Use the package in this order to reduce callsite boilerplate:
 
 1. `withErrorSafety(...)` for provider/wallet objects so async method failures are normalized automatically.
 2. `normalizeError(...)` or `globalNormalizer.normalize(...)` for one-off/manual boundaries.
-3. `createUseCardanoOp(...)` from `@gulla0/cardano-error-normalizer/react` for UI operation state in React apps.
+3. `useCardanoError(...)` from `@gulla0/cardano-error-normalizer/react` for UI operation state in React apps.
 
 ### Provider/Wallet Wrapper (Recommended)
 
@@ -77,23 +77,44 @@ await safeProvider.submitTx(txCborHex);
 
 `withErrorSafety` rethrows `CardanoAppError` and annotates `meta.safeProviderWrapped=true` and `meta.safeProviderMethod`.
 
+### Debug + Trace Enrichment
+
+Enable debug telemetry and trace extraction without changing your callsites:
+
+```ts
+import { withErrorSafety } from "@gulla0/cardano-error-normalizer";
+
+const safeProvider = withErrorSafety(rawProvider, {
+  ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost" },
+  normalizerConfig: {
+    debug: true,
+    parseTraces: true
+  }
+});
+```
+
+`debug` writes guarded console diagnostics, and `parseTraces` adds trimmed trace lines to `normalized.meta.traces` when present.
+
 ### React Hook Entrypoint (Optional)
 
 The core package stays framework-agnostic. React usage is available from the `./react` subpath:
 
 ```ts
 import { useCallback, useState } from "react";
-import { createUseCardanoOp } from "@gulla0/cardano-error-normalizer/react";
-
-const useCardanoOp = createUseCardanoOp({ useState, useCallback });
+import { useCardanoError } from "@gulla0/cardano-error-normalizer/react";
 
 export function useSubmitTx(submitTx: (cborHex: string) => Promise<string>) {
-  return useCardanoOp(submitTx, {
+  return useCardanoError({
+    bindings: { useState, useCallback },
+    operation: submitTx,
     ctx: {
       source: "provider_submit",
       stage: "submit",
       provider: "blockfrost",
       network: "preprod"
+    },
+    normalizerConfig: {
+      parseTraces: true
     }
   });
 }
@@ -145,6 +166,24 @@ try {
   await doWork();
 } catch (err) {
   throw normalizeError(err, { source: "provider_query", stage: "build" });
+}
+```
+
+### Rendering Actionable Resolution Hints
+
+Every normalized error can include `resolution` guidance:
+
+```ts
+import type { CardanoAppError } from "@gulla0/cardano-error-normalizer";
+
+try {
+  await safeProvider.submitTx(txCborHex);
+} catch (err) {
+  const normalized = err as CardanoAppError;
+  const title = normalized.resolution?.title ?? "Troubleshoot transaction failure";
+  const steps = normalized.resolution?.steps ?? ["Inspect logs and retry"];
+
+  renderHintCard({ title, steps });
 }
 ```
 

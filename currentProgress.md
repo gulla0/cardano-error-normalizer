@@ -107,10 +107,16 @@
 
 ## Current Build Focus
 - Active section: `DX v2 blueprint implementation`
-- Current task: `DX v2 update README usage for direct react hook import + debug mode + hint rendering`
+- Current task: `DX v2 run validation gates (npm test, npm run typecheck, npm pack --dry-run)`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX v2 README usage alignment
+- Decision: Update README DX guidance to prefer direct `useCardanoError` import from `@gulla0/cardano-error-normalizer/react`, document `normalizerConfig` (`debug`, `parseTraces`) usage, and add a resolution-hint rendering snippet for UI surfaces.
+- Reason: Complete the next agent-owned DX docs section so usage examples align with the shipped React and smart-normalizer APIs.
+- Impact: Documentation now reflects the current DX v2 entrypoints and shows how to surface actionable `resolution` hints in app UX.
+
 - Date: 2026-02-18
 - Section: DX v2 matcher/debug/wrapper/react coverage expansion
 - Decision: Add targeted tests across `core.normalize`, `withErrorSafety`, and `react/index` for remaining smart matcher branches, trace parsing cap/trim behavior, debug logging fallback safety, normalizer precedence rules, and React safety transition paths (`normalizerConfig`, custom normalizer + arg-aware `ctx` callbacks).
@@ -312,7 +318,7 @@
 ## Testing Notes
 - Last run: 2026-02-18
 - Result: Pass (`npm test` 49/49 locally)
-- Notes: Added DX v2 coverage for remaining smart matcher branches (`NETWORK_UNREACHABLE`, `RATE_LIMITED`, `QUOTA_EXCEEDED`), trace parsing trim/cap behavior, debug fallback non-crash guarantees, wrapper normalizer precedence/ctx arg propagation, and React `normalizerConfig` + custom normalizer transitions.
+- Notes: README DX v2 examples updated for direct React hook import, debug/trace config usage, and resolution-hint rendering; regression suite remains green.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -347,7 +353,7 @@
 - [x] DX v2: add React direct hook entrypoint `src/react/index.ts` with `useCardanoError(config?)` and `executeWithSafety`.
 - [x] DX v2: align package exports for subpath imports (`./react`) and verify peer dependency strategy for optional React usage.
 - [x] DX v2: add tests for normalization matcher coverage, resolution mapping, debug-mode non-crash behavior, wrapper propagation, and React hook state transitions.
-- [ ] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
+- [x] DX v2: update README usage to show direct `cardano-error-normalizer/react` hook import, debug mode usage, and actionable hint rendering.
 - [ ] DX v2: run validation gates (`npm test`, `npm run typecheck`, `npm pack --dry-run`) after implementation.
 
 ## Human Work Queue (One At A Time)
