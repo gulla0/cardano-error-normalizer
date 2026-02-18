@@ -190,3 +190,79 @@ test("withErrorSafety accepts normalizerConfig when no custom normalizer is prov
     }
   );
 });
+
+test("withErrorSafety prioritizes explicit normalizer over normalizerConfig", async () => {
+  const provider = {
+    async submitTx(): Promise<string> {
+      throw new Error("request timeout");
+    }
+  };
+
+  let normalizeCalls = 0;
+  const customNormalizer = {
+    normalize() {
+      normalizeCalls += 1;
+      return {
+        name: "CardanoAppError" as const,
+        source: "provider_submit" as const,
+        stage: "submit" as const,
+        code: "WALLET_INTERNAL" as const,
+        severity: "error" as const,
+        message: "forced by custom normalizer",
+        timestamp: new Date().toISOString(),
+        raw: { forced: true },
+        originalError: { forced: true }
+      };
+    }
+  };
+
+  const safeProvider = withErrorSafety(provider, {
+    ctx: {
+      source: "provider_submit",
+      stage: "submit"
+    },
+    normalizer: customNormalizer,
+    normalizerConfig: {
+      parseTraces: true
+    }
+  });
+
+  await assert.rejects(
+    () => safeProvider.submitTx(),
+    (err: unknown) => {
+      const normalized = err as { code: string; meta?: Record<string, unknown> };
+      assert.equal(normalized.code, "WALLET_INTERNAL");
+      assert.equal(normalized.meta?.safeProviderWrapped, true);
+      return true;
+    }
+  );
+
+  assert.equal(normalizeCalls, 1);
+});
+
+test("withErrorSafety passes method name and args to ctx resolver", async () => {
+  const provider = {
+    async submitTx(tx: string, retries: number): Promise<string> {
+      throw new Error(`failed:${tx}:${retries}`);
+    }
+  };
+
+  let capturedMethod = "";
+  let capturedArgs: unknown[] = [];
+
+  const safeProvider = withErrorSafety(provider, {
+    ctx(method, args) {
+      capturedMethod = method;
+      capturedArgs = args;
+      return {
+        source: "provider_submit",
+        stage: "submit",
+        walletHint: `${method}:${String(args[0])}`
+      };
+    }
+  });
+
+  await assert.rejects(() => safeProvider.submitTx("tx_1", 2));
+  assert.equal(capturedMethod, "submitTx");
+  assert.deepEqual(capturedArgs, ["tx_1", 2]);
+});
