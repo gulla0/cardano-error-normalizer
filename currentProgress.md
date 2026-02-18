@@ -106,8 +106,8 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `DX follow-up React compatibility cleanup`
-- Current task: `Agent-owned: release-readiness follow-up for DX fixes`
+- Active section: `Post-release monitoring and fixture expansion`
+- Current task: `Agent-owned: monitor and codify newly observed runtime payloads`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -133,11 +133,18 @@
 - [x] Record final DX closure decision + evidence in the Decisions Log after implementation.
 
 ### E) Release Readiness for DX Fixes
-- [ ] If API surface changes, update versioning/release notes accordingly.
-- [ ] Run package validation (`npm pack --dry-run`) using `/tmp` npm cache strategy if needed.
-- [ ] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
+- [x] If API surface changes, update versioning/release notes accordingly.
+- [x] Run package validation (`npm pack --dry-run`) using `/tmp` npm cache strategy if needed.
+- [x] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: DX follow-up release-readiness closure (section E)
+- Decision: Close section E after confirming changelog/version coverage for DX API changes and rerunning publish gates with `/tmp` npm cache strategy.
+- Reason: Section E was the remaining unchecked agent-owned section and required concrete gate evidence before closing.
+- Impact: DX follow-up queue is now fully closed; repository focus returns to post-release runtime fixture monitoring.
+- Test evidence: `npm test` -> `69/69` passing; `npm run typecheck` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run` -> passing.
+
 - Date: 2026-02-18
 - Section: DX follow-up documentation/progress alignment closure
 - Decision: Align React README guidance with source runtime behavior by documenting the exact default hook auto-binding path (`globalThis.React`) and keeping `config.hooks` as the advanced compatibility fallback when runtime globals are unavailable.
@@ -496,8 +503,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test -- test/react.index.test.ts` -> `7/7`; `npm run typecheck` -> passing)
-- Notes: Added runtime React auto-bindings coverage for `useCardanoError` without `config.hooks`; compatibility export path remains covered.
+- Result: Pass (`npm test` -> `69/69`; `npm run typecheck` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run` -> passing)
+- Notes: Release-readiness gates rerun cleanly after confirming DX surface notes in changelog and release checklist alignment.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
