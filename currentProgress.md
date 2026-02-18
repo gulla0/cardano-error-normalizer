@@ -3,7 +3,7 @@
 ## Project
 - Name: Cardano Error Normalizer MVP
 - Source plan: `mvp.md`
-- Last updated: 2026-02-17
+- Last updated: 2026-02-18
 
 ## Workflow Rules
 - After each small section is built, run tests for that section.
@@ -202,9 +202,9 @@
 - Impact: MVP definition-of-done changelog requirement is now satisfied and release discussion can reference a concrete taxonomy snapshot.
 
 ## Testing Notes
-- Last run: 2026-02-17
+- Last run: 2026-02-18
 - Result: Pass (21/21 tests)
-- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after adding `CHANGELOG.md` for taxonomy v1 and known limitations; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
+- Notes: `npm test` using Node test runner with `--experimental-strip-types`; suite remains green after syncing progress state; integration adapter-order tests continue to cover mesh unwrap precedence over node heuristics and wallet-over-Blockfrost precedence for mixed payload shapes.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -214,7 +214,7 @@
 - 2026-02-17: `b408847` - Add GitHub Actions CI workflow for npm test.
 - 2026-02-17: `970a4f5` - Prepare package publish metadata for public ESM release.
 - 2026-02-17: `8df3a17` - Add project `.gitignore` and update progress log.
-- 2026-02-17: `pending` - Add `CHANGELOG.md` entry for taxonomy v1 and known limitations.
+- 2026-02-17: `ee53fca` - Add `CHANGELOG.md` entry for taxonomy v1 and sync progress.
 
 ## Next
 - [ ] Read `mvp.md` and this file at start of the next cycle.
