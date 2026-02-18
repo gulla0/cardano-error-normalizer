@@ -101,27 +101,29 @@ const safeProvider = withErrorSafety(rawProvider, {
 The core package stays framework-agnostic. React usage is available from the `./react` subpath:
 
 ```ts
-import { useCallback, useState } from "react";
 import { useCardanoError } from "@gulla0/cardano-error-normalizer/react";
 
 export function useSubmitTx(submitTx: (cborHex: string) => Promise<string>) {
   return useCardanoError({
-    bindings: { useState, useCallback },
     operation: submitTx,
-    ctx: {
+    defaults: {
       source: "provider_submit",
       stage: "submit",
       provider: "blockfrost",
       network: "preprod"
     },
-    normalizerConfig: {
-      parseTraces: true
+    config: {
+      normalizerConfig: {
+        parseTraces: true
+      }
     }
   });
 }
 ```
 
-The hook provides `loading`, `data`, `error`, `run`, and `reset`, and rethrows normalized `CardanoAppError` from `run(...)`.
+The hook provides `loading`, `data`, `error`, `run`, `normalize`, and `reset`, and rethrows normalized `CardanoAppError` from `run(...)`.
+
+`@gulla0/cardano-error-normalizer/react` requires a React runtime (`peerDependencies.react >=16.8.0`). Non-React consumers should import only the root package entrypoint.
 
 ## Migration: Manual try/catch -> Wrapper/Helper
 

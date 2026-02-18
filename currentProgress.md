@@ -107,10 +107,17 @@
 
 ## Current Build Focus
 - Active section: `Verification report remediation (spec-aligned + fixture-tested)`
-- Current task: `Execution checklist #1 pending: React hook DX update (bindingless API + peerDependencies); checklist #0 API shape normalization completed`
+- Current task: `Execution checklist #2 pending: scoped defaults factory (createNormalizer + withDefaults); checklist #1 React hook DX update completed`
 - Blockers: `none`
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Verification remediation execution checklist #1 (React DX update)
+- Decision: Switch `./react` primary hook to `useCardanoError({ operation, defaults, config })`, add returned `normalize(raw, overrideCtx)` helper with `{ ...defaults, ...overrideCtx }` merge semantics, retain `createUseCardanoOp` compatibility exports, add `peerDependencies.react >=16.8.0`, and update README React usage to remove bindings-first flow plus document non-React peer behavior.
+- Reason: Close the next agent-owned checklist section with spec-aligned API shape and package metadata while keeping existing compatibility helpers available.
+- Impact: React consumers now use a bindingless options API with built-in normalize helper and merged context defaults; package metadata now advertises React peer expectations for `./react` consumers.
+- Test evidence: `npm test` -> `53/53` passing; `npm run typecheck` -> passing.
+
 - Date: 2026-02-18
 - Section: Verification remediation section 0 (API shape normalization)
 - Decision: Implement `createNormalizer({ config, defaults })`, add `Normalizer.withDefaults(moreDefaults)`, and update `normalizeError(raw, ctx?, config?)` to support scoped context defaults and per-call config without mutating singleton defaults. Backward compatibility for legacy `createNormalizer(config)` calls is preserved.

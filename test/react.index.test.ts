@@ -39,19 +39,21 @@ function createHookHarness<TArgs extends unknown[], TData>(
     render() {
       cursor = 0;
       return useCardanoError({
-        bindings,
         operation,
-        ctx: {
+        defaults: {
           source: "provider_submit",
           stage: "submit",
           provider: "blockfrost"
+        },
+        config: {
+          hooks: bindings
         }
       });
     }
   };
 }
 
-test("useCardanoError drives hook state using config-style API", async () => {
+test("useCardanoError drives hook state using defaults/config API", async () => {
   const harness = createHookHarness(async (tx: string) => `ok:${tx}`);
   let hook = harness.render();
 
@@ -143,19 +145,21 @@ test("useCardanoError supports normalizerConfig for matcher + trace transitions"
   const render = () => {
     cursor = 0;
     return useCardanoError({
-      bindings,
       operation: async () => {
         throw {
           message: "request timeout",
           trace: "line 1\nline 2"
         };
       },
-      ctx: {
+      defaults: {
         source: "provider_submit",
         stage: "submit"
       },
-      normalizerConfig: {
-        parseTraces: true
+      config: {
+        hooks: bindings,
+        normalizerConfig: {
+          parseTraces: true
+        }
       }
     });
   };
@@ -167,6 +171,58 @@ test("useCardanoError supports normalizerConfig for matcher + trace transitions"
   assert.equal(hook.error?.code, "TIMEOUT");
   assert.equal(hook.error?.resolution?.title, "Retry timed-out request");
   assert.deepEqual(hook.error?.meta?.traces, ["line 1", "line 2"]);
+});
+
+test("useCardanoError normalize merges defaults and overrides", () => {
+  const slots: unknown[] = [];
+  let cursor = 0;
+  const bindings: HookBindings = {
+    useState<T>(initial: T) {
+      const index = cursor++;
+      if (!(index in slots)) {
+        slots[index] = initial;
+      }
+
+      const setState = (value: T | ((prev: T) => T)) => {
+        const prev = slots[index] as T;
+        slots[index] = typeof value === "function" ? (value as (p: T) => T)(prev) : value;
+      };
+
+      return [slots[index] as T, setState];
+    },
+    useCallback<T extends (...args: any[]) => unknown>(callback: T): T {
+      cursor++;
+      return callback;
+    }
+  };
+
+  cursor = 0;
+  const hook = useCardanoError({
+    defaults: {
+      source: "provider_submit",
+      stage: "submit",
+      provider: "blockfrost"
+    },
+    config: {
+      hooks: bindings
+    }
+  });
+
+  const normalized = hook.normalize(
+    {
+      status_code: 404,
+      error: "Not Found",
+      message: "missing"
+    },
+    {
+      stage: "build"
+    }
+  );
+
+  assert.equal(normalized.source, "provider_submit");
+  assert.equal(normalized.stage, "build");
+  assert.equal(normalized.code, "NOT_FOUND");
+  assert.equal(normalized.provider, "blockfrost");
 });
 
 test("executeWithSafety uses custom normalizer precedence and ctx args", async () => {

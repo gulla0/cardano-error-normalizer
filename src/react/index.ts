@@ -14,12 +14,14 @@ export {
 } from "./useCardanoOp.ts";
 
 export interface UseCardanoErrorConfig<TArgs extends unknown[], TData> {
-  bindings: HookBindings;
-  operation: (...args: TArgs) => Promise<TData>;
-  ctx: NormalizeContext | ((...args: TArgs) => NormalizeContext);
-  normalizer?: Normalizer;
-  normalizerConfig?: Partial<NormalizerConfig>;
-  onError?: (normalized: CardanoAppError, args: TArgs) => void;
+  operation?: (...args: TArgs) => Promise<TData>;
+  defaults?: Partial<NormalizeContext> | ((...args: TArgs) => Partial<NormalizeContext>);
+  config?: {
+    normalizer?: Normalizer;
+    normalizerConfig?: Partial<NormalizerConfig>;
+    onError?: (normalized: CardanoAppError, args: TArgs) => void;
+    hooks?: HookBindings;
+  };
 }
 
 export interface ExecuteWithSafetyOptions<TArgs extends unknown[]> {
@@ -29,15 +31,32 @@ export interface ExecuteWithSafetyOptions<TArgs extends unknown[]> {
   onError?: (normalized: CardanoAppError, args: TArgs) => void;
 }
 
+export interface UseCardanoErrorResult<TArgs extends unknown[], TData>
+  extends UseCardanoOpResult<TArgs, TData> {
+  normalize: (raw: unknown, overrideCtx?: Partial<NormalizeContext>) => CardanoAppError;
+}
+
 export function useCardanoError<TArgs extends unknown[], TData>(
-  config: UseCardanoErrorConfig<TArgs, TData>
-): UseCardanoOpResult<TArgs, TData> {
-  const useCardanoOp = createUseCardanoOp(config.bindings);
-  return useCardanoOp(config.operation, {
-    ctx: config.ctx,
-    normalizer: resolveNormalizer(config.normalizer, config.normalizerConfig),
-    onError: config.onError
+  options: UseCardanoErrorConfig<TArgs, TData> = {}
+): UseCardanoErrorResult<TArgs, TData> {
+  const hooks = options.config?.hooks ?? defaultHookBindings();
+  const useCardanoOp = createUseCardanoOp(hooks);
+  const normalizer = resolveNormalizer(options.config?.normalizer, options.config?.normalizerConfig);
+  const operation = options.operation ?? (async () => undefined as TData);
+
+  const hook = useCardanoOp(operation, {
+    ctx: (...args: TArgs) => resolveContext(options.defaults, args),
+    normalizer,
+    onError: options.config?.onError
   });
+
+  return {
+    ...hook,
+    normalize(raw: unknown, overrideCtx?: Partial<NormalizeContext>): CardanoAppError {
+      const mergedCtx = resolveContext(options.defaults, [] as unknown as TArgs, overrideCtx);
+      return normalizer.normalize(raw, mergedCtx);
+    }
+  };
 }
 
 export function executeWithSafety<TArgs extends unknown[], TData>(
@@ -71,4 +90,25 @@ function resolveNormalizer(
   }
 
   return globalNormalizer;
+}
+
+function resolveContext<TArgs extends unknown[]>(
+  defaults:
+    | Partial<NormalizeContext>
+    | ((...args: TArgs) => Partial<NormalizeContext>)
+    | undefined,
+  args: TArgs,
+  overrideCtx?: Partial<NormalizeContext>
+): Partial<NormalizeContext> {
+  const resolvedDefaults = typeof defaults === "function" ? defaults(...args) : defaults;
+  return {
+    ...resolvedDefaults,
+    ...overrideCtx
+  };
+}
+
+function defaultHookBindings(): HookBindings {
+  throw new Error(
+    "React bindings are required in this environment. Pass config.hooks with useState/useCallback."
+  );
 }

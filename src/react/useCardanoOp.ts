@@ -10,7 +10,7 @@ export interface HookBindings {
 }
 
 export interface UseCardanoOpOptions<TArgs extends unknown[]> {
-  ctx: NormalizeContext | ((...args: TArgs) => NormalizeContext);
+  ctx: Partial<NormalizeContext> | ((...args: TArgs) => Partial<NormalizeContext>);
   normalizer?: Normalizer;
   onError?: (normalized: CardanoAppError, args: TArgs) => void;
 }
