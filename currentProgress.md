@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Post-release runtime fixture monitoring`
-- Current task: `Monitoring mode: waiting for the next newly observed runtime payload sample`
+- Current task: `Monitoring mode (optional/trigger-based): no immediate action required; wait for the next newly observed runtime payload sample`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -633,6 +633,7 @@
 
 ## Human Work Queue (One At A Time)
 Execution protocol:
+- Post-release monitoring intake is optional and event-driven (only when a new runtime payload is observed).
 - Ask the human to complete exactly one human-owned task.
 - Wait for their response and collect the required artifacts/answers.
 - Log what was received in this file.
@@ -755,5 +756,5 @@ Task 8 (human):
   - GitHub Actions status: `Passed` for the `test` workflow/job on commit `#7`.
 
 ## Next Steps (Post-Release)
-- Continue monitoring newly observed production/runtime payloads and append fixture coverage under `test/fixtures/verification` when new samples arrive.
+- Optional (when available): continue monitoring newly observed production/runtime payloads and append fixture coverage under `test/fixtures/verification` when new samples arrive.
 - Cut a follow-up patch release only if a mapping bug or compatibility regression is confirmed by fixture-backed tests.
