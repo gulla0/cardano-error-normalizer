@@ -2,12 +2,59 @@
 
 A small TypeScript library that normalizes heterogeneous Cardano stack errors into a stable `CardanoAppError` shape.
 
-Latest published version: `0.2.0` (2026-02-18).
+Current package version in this repository: `0.2.0`.
 
 ## Install
 
 ```bash
 npm install @gulla0/cardano-error-normalizer
+```
+
+## Start Here: Test + Use
+
+### 1) Validate this repository locally
+
+```bash
+npm install
+npm test
+npm run typecheck
+npm run build
+```
+
+### 2) Validate in a consumer app
+
+In your app project:
+
+```bash
+npm install @gulla0/cardano-error-normalizer
+```
+
+Then add a boundary where you currently catch provider or wallet errors:
+
+```ts
+import { normalizeError } from "@gulla0/cardano-error-normalizer";
+
+try {
+  await provider.submitTx(txCborHex);
+} catch (err) {
+  const normalized = normalizeError(err, {
+    source: "provider_submit",
+    stage: "submit",
+    provider: "blockfrost",
+    network: "preprod"
+  });
+  console.error("normalized", normalized);
+  throw normalized;
+}
+```
+
+If you want to capture real runtime payload samples for regression fixtures, log the raw input and context before rethrowing:
+
+```ts
+console.error("RUNTIME_ERROR_SAMPLE", {
+  err,
+  ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost", network: "preprod" }
+});
 ```
 
 ## Quickstart
