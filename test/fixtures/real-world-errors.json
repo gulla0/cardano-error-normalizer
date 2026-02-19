@@ -113,5 +113,24 @@
       "message": "Transaction submit failed"
     },
     "expectedCode": "WALLET_SUBMIT_FAILURE"
+  },
+  {
+    "id": "W-SIGN-DECLINED-TXSIGNERROR-2",
+    "observedAt": "2026-02-19",
+    "capturedFrom": "meshOpenSpaces RUNTIME_ERROR_SAMPLE console",
+    "ctx": {
+      "source": "wallet_sign",
+      "stage": "sign",
+      "network": "preprod",
+      "provider": "none (direct wallet signing)",
+      "walletHint": "eternl"
+    },
+    "err": {
+      "name": "TxSignError",
+      "code": 2,
+      "info": "user declined sign tx",
+      "message": "user declined sign tx"
+    },
+    "expectedCode": "WALLET_SIGN_USER_DECLINED"
   }
 ]

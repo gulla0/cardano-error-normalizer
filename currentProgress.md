@@ -163,6 +163,13 @@
 
 ## Decisions Log
 - Date: 2026-02-19
+- Section: Post-release maintenance (runtime payload intake - wallet sign TxSignError code 2)
+- Decision: Add real-world fixture row `W-SIGN-DECLINED-TXSIGNERROR-2` for the observed wallet signing payload (`name=TxSignError`, `code=2`, `info="user declined sign tx"`) with expected mapping `WALLET_SIGN_USER_DECLINED`.
+- Reason: The payload is a concrete CIP-30 sign-decline runtime sample and should be regression-locked in the real-world fixture pack to prevent drift from deterministic wallet mapping table behavior.
+- Impact: Post-release runtime coverage now includes a direct sign-stage user-decline sample from production-like flow, strengthening mapping stability for wallet signing declines.
+- Test evidence: `npm test -- test/real-world-payloads.test.ts` -> pass (`1/1`); `npm test` -> pass (`70/70`).
+
+- Date: 2026-02-19
 - Section: Post-release maintenance (verification fixture parity for wallet submit APIError -2 sample)
 - Decision: Promote the real-world wallet submit payload `W-SUBMIT-BADINPUTS-APIERROR-2` into `test/fixtures/verification/wallet.json` as `WALLET_API_ERROR_INTERNAL_SUBMIT_BADINPUTS` and pass per-row context into wallet verification fixture execution.
 - Reason: The payload was regression-locked in `real-world-errors.json`, but deterministic verification fixtures did not yet assert the same submit-context mapping path for `APIError -2` with `submitTx` + `BadInputsUTxO` text.
@@ -576,8 +583,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-19
-- Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`; `npm test` -> `70/70`)
-- Notes: Added verification wallet fixture `WALLET_API_ERROR_INTERNAL_SUBMIT_BADINPUTS` with submit context to assert `WALLET_SUBMIT_FAILURE` for `APIError -2` payloads containing `submitTx failed: BadInputsUTxO`.
+- Result: Pass (`npm test -- test/real-world-payloads.test.ts` -> `1/1`; `npm test` -> `70/70`)
+- Notes: Added real-world runtime fixture `W-SIGN-DECLINED-TXSIGNERROR-2` to assert deterministic wallet sign-decline mapping (`TxSignError code 2` -> `WALLET_SIGN_USER_DECLINED`).
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -714,6 +721,16 @@ Task 7 (human):
   - In-thread JSON payload captured on `2026-02-19`:
     - `rawPayload`: `{ "code": -2, "info": "submitTx failed: BadInputsUTxO", "message": "Transaction submit failed" }`
     - `context`: `source=wallet_submit`, `stage=submit`, `network=mainnet`, `provider=none (direct wallet submit)`, `walletHint=CIP-30 browser wallet (e.g., Eternl/Lace)`, `expectedCode=WALLET_SUBMIT_FAILURE`
+- Needed by agent to add fixture coverage and re-run regression gates.
+
+Task 8 (human):
+- Provide exactly one newly observed runtime payload sample for post-release monitoring (raw payload + context + expected code if known).
+- Status: `Completed`
+- Received:
+  - In-thread JSON payload captured on `2026-02-19`:
+    - `id`: `W-SIGN-DECLINED-TXSIGNERROR-2`
+    - `rawPayload`: `{ "name": "TxSignError", "code": 2, "info": "user declined sign tx", "message": "user declined sign tx" }`
+    - `context`: `source=wallet_sign`, `stage=sign`, `network=preprod`, `provider=none (direct wallet signing)`, `walletHint=eternl`, `expectedCode=WALLET_SIGN_USER_DECLINED`
 - Needed by agent to add fixture coverage and re-run regression gates.
 
 ## 2026-02-18 Dependency/CI Follow-Up
