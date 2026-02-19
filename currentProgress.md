@@ -3,7 +3,7 @@
 ## Project
 - Name: Cardano Error Normalizer MVP
 - Source plan: `mvp.md`
-- Last updated: 2026-02-18
+- Last updated: 2026-02-19
 
 ## Workflow Rules
 - After each small section is built, run tests for that section.
@@ -106,8 +106,8 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Tarball validation remediation (release-candidate recovery) - completed`
-- Current task: `Agent-owned: release-candidate exit criteria closed; tarball marked publish candidate`
+- Active section: `Post-release runtime fixture monitoring`
+- Current task: `Agent-owned: fixture-lock newly received wallet submit payload (APIError -2 + BadInputsUTxO)`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -162,6 +162,13 @@
 - [x] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-19
+- Section: Post-release maintenance (runtime payload intake - wallet submit APIError -2)
+- Decision: Add a new real-world fixture row `W-SUBMIT-BADINPUTS-APIERROR-2` for the user-provided wallet submit payload (`code=-2`, `info="submitTx failed: BadInputsUTxO"`) with expected mapping `WALLET_SUBMIT_FAILURE`.
+- Reason: Human-provided runtime sample matches the existing submit-context disambiguation rule for `APIError -2`; fixture-locking is required to prevent regression back to generic `WALLET_INTERNAL`/`UNKNOWN` handling.
+- Impact: Post-release regression coverage now includes a concrete wallet submit + node-tag hybrid message path from real usage, improving mapping stability for CIP-30 wallet submit failures.
+- Test evidence: `npm test -- test/real-world-payloads.test.ts` -> pass (`1/1`); `npm test` -> pass (`70/70`).
+
 - Date: 2026-02-19
 - Section: Tarball remediation section D closure (release-candidate exit criteria)
 - Decision: Close section D and mark `gulla0-cardano-error-normalizer-0.2.0.tgz` as publish candidate after successful consumer install/import validation with `--save` and non-extraneous dependency state.
@@ -562,8 +569,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-19
-- Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`; `npm test` -> `70/70`)
-- Notes: Runtime fixture path now uses smart normalizer parity (`test/real-world-payloads.test.ts`), `E-NO-CONNECTION` now asserts `NETWORK_UNREACHABLE`, and `inferErrorMeta` adds connectivity inference (`inferredKind="connectivity_unreachable"`).
+- Result: Pass (`npm test -- test/real-world-payloads.test.ts` -> `1/1`; `npm test` -> `70/70`)
+- Notes: Added runtime wallet submit fixture `W-SUBMIT-BADINPUTS-APIERROR-2` asserting `WALLET_SUBMIT_FAILURE` for `APIError -2` payloads containing `submitTx failed: BadInputsUTxO`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -692,6 +699,15 @@ Task 6 (human):
   - Artifact: in-thread payload batch with IDs `E-USB-REQUESTDEVICE`, `E-NO-CONNECTION`, `E-VALUE-SIZE-5000` (received 2026-02-19).
   - Context coverage: `source`, `stage`, provider/wallet hint, operation, and expected behavior notes per payload.
 - Needed by agent to complete section C fixture locking and mapping hardening.
+
+Task 7 (human):
+- Provide exactly one newly observed runtime payload sample for post-release monitoring (raw payload + context + expected code if known).
+- Status: `Completed`
+- Received:
+  - In-thread JSON payload captured on `2026-02-19`:
+    - `rawPayload`: `{ "code": -2, "info": "submitTx failed: BadInputsUTxO", "message": "Transaction submit failed" }`
+    - `context`: `source=wallet_submit`, `stage=submit`, `network=mainnet`, `provider=none (direct wallet submit)`, `walletHint=CIP-30 browser wallet (e.g., Eternl/Lace)`, `expectedCode=WALLET_SUBMIT_FAILURE`
+- Needed by agent to add fixture coverage and re-run regression gates.
 
 ## 2026-02-18 Dependency/CI Follow-Up
 - Trigger:

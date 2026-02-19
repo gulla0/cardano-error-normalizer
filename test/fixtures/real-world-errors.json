@@ -95,5 +95,23 @@
     "ctx": { "source": "mesh_build", "stage": "build", "walletHint": "eternl" },
     "err": "Maximum value size of 5000 exceeded",
     "expectedCode": "UNKNOWN"
+  },
+  {
+    "id": "W-SUBMIT-BADINPUTS-APIERROR-2",
+    "observedAt": "2026-02-19",
+    "capturedFrom": "in-thread-human-sample",
+    "ctx": {
+      "source": "wallet_submit",
+      "stage": "submit",
+      "network": "mainnet",
+      "provider": "none (direct wallet submit)",
+      "walletHint": "CIP-30 browser wallet (e.g., Eternl/Lace)"
+    },
+    "err": {
+      "code": -2,
+      "info": "submitTx failed: BadInputsUTxO",
+      "message": "Transaction submit failed"
+    },
+    "expectedCode": "WALLET_SUBMIT_FAILURE"
   }
 ]
