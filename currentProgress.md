@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Post-release runtime fixture monitoring`
-- Current task: `Human-owned: provide exactly one newly observed runtime payload sample for continued monitoring`
+- Current task: `Monitoring mode: waiting for the next newly observed runtime payload sample`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -682,7 +682,7 @@ Task 4 (human):
   - push approval: `yes` (received 2026-02-18)
 - Needed by agent to configure `origin`, push commits, and verify CI trigger links.
 
-Task 4 (agent, after human Task 4):
+Task 4A (agent, after human Task 4):
 - Configure `origin` remote, push `main`, and confirm GitHub Actions CI is triggered for the latest commit.
 - Status: `Completed`
 - Completion gate:
@@ -738,5 +738,5 @@ Task 7 (human):
   - GitHub Actions status: `Passed` for the `test` workflow/job on commit `#7`.
 
 ## Next Steps (Post-Release)
-- Monitor newly observed production/runtime error payloads and append fixture coverage under `test/fixtures/verification`.
-- Cut a follow-up patch release only when a mapping bug or compatibility regression is confirmed.
+- Continue monitoring newly observed production/runtime payloads and append fixture coverage under `test/fixtures/verification` when new samples arrive.
+- Cut a follow-up patch release only if a mapping bug or compatibility regression is confirmed by fixture-backed tests.
