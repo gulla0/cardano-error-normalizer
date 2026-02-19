@@ -40,7 +40,7 @@ test("verification fixtures: wallet families map deterministically", async () =>
   const rows = await readFixture("wallet");
 
   for (const row of rows) {
-    const adapted = fromWalletError(row.err);
+    const adapted = fromWalletError(row.err, row.ctx as NormalizeContext | undefined);
 
     assert.ok(adapted, `expected mapping for ${row.label}`);
     assert.equal(adapted?.code, row.expectedCode, row.label);

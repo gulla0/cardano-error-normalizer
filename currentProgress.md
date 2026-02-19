@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Post-release runtime fixture monitoring`
-- Current task: `Agent-owned: fixture-lock newly received wallet submit payload (APIError -2 + BadInputsUTxO)`
+- Current task: `Human-owned: provide exactly one newly observed runtime payload sample for continued monitoring`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -162,6 +162,13 @@
 - [x] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-19
+- Section: Post-release maintenance (verification fixture parity for wallet submit APIError -2 sample)
+- Decision: Promote the real-world wallet submit payload `W-SUBMIT-BADINPUTS-APIERROR-2` into `test/fixtures/verification/wallet.json` as `WALLET_API_ERROR_INTERNAL_SUBMIT_BADINPUTS` and pass per-row context into wallet verification fixture execution.
+- Reason: The payload was regression-locked in `real-world-errors.json`, but deterministic verification fixtures did not yet assert the same submit-context mapping path for `APIError -2` with `submitTx` + `BadInputsUTxO` text.
+- Impact: Verification suite now directly guards this wallet submit disambiguation branch, reducing drift risk between runtime fixtures and canonical verification fixtures.
+- Test evidence: `npm test -- test/verification.fixtures.test.ts` -> pass (`4/4`); `npm test` -> pass (`70/70`).
+
 - Date: 2026-02-19
 - Section: Post-release maintenance (runtime payload intake - wallet submit APIError -2)
 - Decision: Add a new real-world fixture row `W-SUBMIT-BADINPUTS-APIERROR-2` for the user-provided wallet submit payload (`code=-2`, `info="submitTx failed: BadInputsUTxO"`) with expected mapping `WALLET_SUBMIT_FAILURE`.
@@ -569,8 +576,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-19
-- Result: Pass (`npm test -- test/real-world-payloads.test.ts` -> `1/1`; `npm test` -> `70/70`)
-- Notes: Added runtime wallet submit fixture `W-SUBMIT-BADINPUTS-APIERROR-2` asserting `WALLET_SUBMIT_FAILURE` for `APIError -2` payloads containing `submitTx failed: BadInputsUTxO`.
+- Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`; `npm test` -> `70/70`)
+- Notes: Added verification wallet fixture `WALLET_API_ERROR_INTERNAL_SUBMIT_BADINPUTS` with submit context to assert `WALLET_SUBMIT_FAILURE` for `APIError -2` payloads containing `submitTx failed: BadInputsUTxO`.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.

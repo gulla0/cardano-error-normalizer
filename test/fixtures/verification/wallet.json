@@ -27,6 +27,23 @@
     }
   },
   {
+    "label": "WALLET_API_ERROR_INTERNAL_SUBMIT_BADINPUTS",
+    "err": {
+      "code": -2,
+      "info": "submitTx failed: BadInputsUTxO",
+      "message": "Transaction submit failed"
+    },
+    "expectedCode": "WALLET_SUBMIT_FAILURE",
+    "expectedMeta": {
+      "inferredProvider": "wallet",
+      "inferredKind": "wallet_cip_numeric"
+    },
+    "ctx": {
+      "source": "wallet_submit",
+      "stage": "submit"
+    }
+  },
+  {
     "label": "WALLET_DATA_SIGN_ADDRESS_NOT_PK",
     "err": {
       "name": "DataSignError",
