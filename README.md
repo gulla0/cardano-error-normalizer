@@ -10,109 +10,107 @@ Current package version in this repository: `0.2.0`.
 npm install @gulla0/cardano-error-normalizer
 ```
 
-## Start Here: Test + Use
+## Quickstart (Recommended: Preset + Wrapper)
 
-### 1) Validate this repository locally
-
-```bash
-npm install
-npm test
-npm run typecheck
-npm run build
-```
-
-### 2) Validate in a consumer app
-
-In your app project:
-
-```bash
-npm install @gulla0/cardano-error-normalizer
-```
-
-Then add a boundary where you currently catch provider or wallet errors:
+Use wrapper presets first so context is mostly automatic.
 
 ```ts
-import { normalizeError } from "@gulla0/cardano-error-normalizer";
+import {
+  cip30WalletPreset,
+  isCardanoAppError,
+  meshProviderPreset
+} from "@gulla0/cardano-error-normalizer";
 
-try {
-  await provider.submitTx(txCborHex);
-} catch (err) {
-  const normalized = normalizeError(err, {
-    source: "provider_submit",
-    stage: "submit",
-    provider: "blockfrost",
-    network: "preprod"
-  });
-  console.error("normalized", normalized);
-  throw normalized;
-}
-```
-
-If you want to capture real runtime payload samples for regression fixtures, log the raw input and context before rethrowing:
-
-```ts
-console.error("RUNTIME_ERROR_SAMPLE", {
-  err,
-  ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost", network: "preprod" }
+const safeMeshProvider = meshProviderPreset(rawMeshProvider, {
+  provider: "blockfrost"
 });
-```
 
-## Quickstart
-
-```ts
-import { createNormalizer } from "@gulla0/cardano-error-normalizer";
-
-const normalizer = createNormalizer({
-  config: { includeFingerprint: true },
-  defaults: { source: "provider_submit", stage: "submit" }
+const safeWalletApi = cip30WalletPreset(rawWalletApi, {
+  walletHint: "eternl"
 });
 
 try {
-  // Simulated wrapped provider error from a Mesh + Blockfrost flow.
-  throw {
-    message: "Mesh submit failed",
-    cause: {
-      response: {
-        data: {
-          status_code: 402,
-          error: "Project Over Limit",
-          message: "Daily request limit has been exceeded"
-        }
-      }
-    }
-  };
+  await safeMeshProvider.submitTx(txCborHex);
 } catch (err) {
-  const normalized = normalizer.normalize(err, {
-    network: "preprod",
-    provider: "blockfrost",
-    walletHint: "eternl"
-  });
+  if (isCardanoAppError(err)) {
+    console.error(err.code, err.resolution?.steps);
+    throw err;
+  }
 
-  console.log(normalized.code); // QUOTA_EXCEEDED
-  console.log(normalized.meta); // includes blockfrostReason + meshUnwrapped
+  throw err;
 }
 ```
 
-## DX-First Integration Path
+## What You Get (`CardanoAppError`)
 
-Use the package in this order to reduce callsite boilerplate:
+`walletHint` from context maps to `error.wallet?.name` unless an adapter provides a richer wallet object.
 
-1. `withErrorSafety(...)` for provider/wallet objects so async method failures are normalized automatically.
-2. `normalizeError(...)` or `globalNormalizer.normalize(...)` for one-off/manual boundaries.
-3. `useCardanoError(...)` from `@gulla0/cardano-error-normalizer/react` for UI operation state in React apps.
+```json
+{
+  "name": "CardanoAppError",
+  "source": "provider_submit",
+  "stage": "submit",
+  "code": "QUOTA_EXCEEDED",
+  "severity": "warn",
+  "message": "Daily request limit has been exceeded",
+  "timestamp": "2026-02-19T12:00:00.000Z",
+  "network": "preprod",
+  "provider": "blockfrost",
+  "wallet": { "name": "eternl" },
+  "resolution": {
+    "title": "Upgrade or wait for quota reset",
+    "steps": ["Verify project quota", "Retry after reset window"]
+  },
+  "meta": {
+    "blockfrostReason": "daily_limit",
+    "safeProviderWrapped": true,
+    "safeProviderMethod": "submitTx"
+  }
+}
+```
 
-### Provider/Wallet Wrapper (Recommended)
+## Canonical Integration Path
+
+1. `meshProviderPreset(...)` / `cip30WalletPreset(...)`
+2. `withErrorSafety(...)` for non-preset objects
+3. `createNormalizer({ defaults })` for manual boundaries
+4. `@gulla0/cardano-error-normalizer/react` for React operations
+
+## Wrapper-First Usage
+
+### Preset Helpers (Preferred)
+
+```ts
+import {
+  cip30WalletPreset,
+  meshProviderPreset
+} from "@gulla0/cardano-error-normalizer";
+
+const safeMeshProvider = meshProviderPreset(rawMeshProvider, {
+  provider: "blockfrost",
+  network: "preprod"
+});
+
+const safeWalletApi = cip30WalletPreset(rawWalletApi, {
+  walletHint: "eternl",
+  network: "preprod"
+});
+```
+
+`meshProviderPreset` maps provider methods (for example `submitTx`, `fetchAddressUTxOs`) to provider context. `cip30WalletPreset` maps CIP-30 wallet methods (for example `getUtxos`, `signTx`, `submitTx`) to wallet context.
+
+### Generic Wrapper
 
 ```ts
 import { withErrorSafety } from "@gulla0/cardano-error-normalizer";
 
 const safeProvider = withErrorSafety(rawProvider, {
-  ctx: (method) => ({
-    source: method === "submitTx" ? "provider_submit" : "provider_query",
-    stage: method === "submitTx" ? "submit" : "build",
+  ctx: {
+    source: "provider_submit",
+    stage: "submit",
     provider: "blockfrost",
     network: "preprod"
-  }),
+  },
   onError(normalized, details) {
     console.error("normalized provider error", {
       method: details.method,
@@ -127,54 +125,48 @@ await safeProvider.submitTx(txCborHex);
 
 `withErrorSafety` rethrows `CardanoAppError` and annotates `meta.safeProviderWrapped=true` and `meta.safeProviderMethod`.
 
-### Debug + Trace Enrichment
-
-Enable debug telemetry and trace extraction without changing your callsites:
+### Advanced: Dynamic `ctx(method)`
 
 ```ts
 import { withErrorSafety } from "@gulla0/cardano-error-normalizer";
 
 const safeProvider = withErrorSafety(rawProvider, {
-  ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost" },
-  normalizerConfig: {
-    debug: true,
-    parseTraces: true
-  }
+  ctx: (method) => ({
+    source: method === "submitTx" ? "provider_submit" : "provider_query",
+    stage: method === "submitTx" ? "submit" : "build",
+    provider: "blockfrost",
+    network: "preprod"
+  })
 });
 ```
 
-`debug` writes guarded console diagnostics, and `parseTraces` adds trimmed trace lines to `normalized.meta.traces` when present.
+Use this only when presets are not suitable.
 
-### React Hook Entrypoint (Optional)
-
-The core package stays framework-agnostic. React usage is available from the `./react` subpath:
+## Manual Boundary Usage
 
 ```ts
-import { useCardanoError } from "@gulla0/cardano-error-normalizer/react";
+import { createNormalizer } from "@gulla0/cardano-error-normalizer";
 
-export function useSubmitTx(submitTx: (cborHex: string) => Promise<string>) {
-  return useCardanoError({
-    operation: submitTx,
-    defaults: {
-      source: "provider_submit",
-      stage: "submit",
-      provider: "blockfrost",
-      network: "preprod"
-    },
-    config: {
-      normalizerConfig: {
-        parseTraces: true
-      }
-    }
-  });
+const normalizer = createNormalizer({
+  config: { includeFingerprint: true },
+  defaults: {
+    source: "provider_submit",
+    stage: "submit",
+    provider: "blockfrost",
+    network: "preprod"
+  }
+});
+
+try {
+  await provider.submitTx(txCborHex);
+} catch (err) {
+  throw normalizer.normalize(err, { walletHint: "eternl" });
 }
 ```
 
-The hook provides `loading`, `data`, `error`, `run`, `normalize`, and `reset`, and rethrows normalized `CardanoAppError` from `run(...)`.
+## React Usage
 
-`@gulla0/cardano-error-normalizer/react` requires a React runtime (`peerDependencies.react >=16.8.0`). Non-React consumers should import only the root package entrypoint.
-
-Default hook auto-binding resolves `useState`/`useCallback` from `globalThis.React` when available. If your runtime does not expose React globally, pass `config.hooks` explicitly (advanced compatibility mode):
+Use the React subpath with explicit hook bindings from React:
 
 ```ts
 import { useCallback, useState } from "react";
@@ -189,105 +181,69 @@ const tx = useCardanoError({
 });
 ```
 
-## Migration: Manual try/catch -> Wrapper/Helper
+`useCardanoError` returns `loading`, `data`, `error`, `run`, `normalize`, and `reset`. `run(...)` rethrows normalized `CardanoAppError`.
 
-Before:
+Legacy runtimes that expose `globalThis.React` can use compatibility mode:
 
 ```ts
-try {
-  const txHash = await provider.submitTx(txCborHex);
-  return txHash;
-} catch (err) {
-  const normalized = normalizer.normalize(err, {
-    source: "provider_submit",
-    stage: "submit",
-    provider: "blockfrost",
-    network: "preprod"
-  });
-  logger.error({ code: normalized.code, raw: normalized.raw });
-  throw normalized;
-}
+import { useCardanoError } from "@gulla0/cardano-error-normalizer/react/compat";
 ```
 
-After:
+## Context Contract
+
+| Field | Required | Notes |
+| --- | --- | --- |
+| `source` | yes (defaulted) | Defaults to `provider_query` if omitted. |
+| `stage` | yes (defaulted) | Defaults to `build` if omitted. |
+| `provider` | no | Copied to `CardanoAppError.provider` unless adapter overrides it. |
+| `network` | no | Defaults to `unknown` in final output. |
+| `walletHint` | no | Hint only; lands in `CardanoAppError.wallet.name` when no richer wallet data exists. |
+| `txHash` | no | Copied to `CardanoAppError.txHash`. |
+| `timestamp` | no | Uses current ISO timestamp when omitted. |
+
+## Resolution Hints (Authority Level)
+
+- `resolution` from canonical error code mapping is authoritative for that code family.
+- `resolution` attached after heuristic message matching (`smartMatcher`) is best-effort guidance.
+- For `UNKNOWN`, treat `resolution` as optional troubleshooting help, not truth.
+
+## Debug and Trace Modes
 
 ```ts
-const safeProvider = withErrorSafety(provider, {
-  ctx: {
-    source: "provider_submit",
-    stage: "submit",
-    provider: "blockfrost",
-    network: "preprod"
+import { withErrorSafety } from "@gulla0/cardano-error-normalizer";
+
+const safeProvider = withErrorSafety(rawProvider, {
+  ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost" },
+  normalizerConfig: {
+    debug: true,
+    parseTraces: true
   }
 });
-
-const txHash = await safeProvider.submitTx(txCborHex);
 ```
 
-For non-proxy boundaries:
+Warning: `debug` may log portions of raw error payloads (`input`, `context`, `output`). Do not enable in production unless that is acceptable for your data-handling policy.
 
-```ts
-import { normalizeError } from "@gulla0/cardano-error-normalizer";
-
-try {
-  await doWork();
-} catch (err) {
-  throw normalizeError(err, { source: "provider_query", stage: "build" });
-}
-```
-
-### Preset Helpers (Layer-Correct Defaults)
-
-Use presets when method names already imply wallet/provider context:
+## Rendering Actionable Hints
 
 ```ts
 import {
-  cip30WalletPreset,
-  meshProviderPreset
+  isCardanoAppError,
+  withErrorSafety
 } from "@gulla0/cardano-error-normalizer";
 
-const safeMeshProvider = meshProviderPreset(rawMeshProvider, {
-  provider: "blockfrost"
-});
-await safeMeshProvider.fetchAddressUTxOs("addr_test...");
-
-const safeWalletApi = cip30WalletPreset(rawWalletApi, {
-  walletHint: "eternl"
-});
-await safeWalletApi.getUtxos();
-```
-
-`meshProviderPreset` maps Mesh provider methods like `fetchAddressUTxOs` to provider-query context, while `cip30WalletPreset` maps CIP-30 wallet methods like `getUtxos` to wallet-query context.
-
-### Rendering Actionable Resolution Hints
-
-Every normalized error can include `resolution` guidance:
-
-```ts
-import type { CardanoAppError } from "@gulla0/cardano-error-normalizer";
-
 try {
-  await safeProvider.submitTx(txCborHex);
+  await withErrorSafety(provider, {
+    ctx: { source: "provider_submit", stage: "submit" }
+  }).submitTx(txCborHex);
 } catch (err) {
-  const normalized = err as CardanoAppError;
-  const title = normalized.resolution?.title ?? "Troubleshoot transaction failure";
-  const steps = normalized.resolution?.steps ?? ["Inspect logs and retry"];
+  if (!isCardanoAppError(err)) {
+    throw err;
+  }
 
+  const title = err.resolution?.title ?? "Troubleshoot transaction failure";
+  const steps = err.resolution?.steps ?? ["Inspect logs and retry"];
   renderHintCard({ title, steps });
 }
-```
-
-Run tests:
-
-```bash
-npm test
-```
-
-Type-check and build:
-
-```bash
-npm run typecheck
-npm run build
 ```
 
 ## Default Adapter Order
@@ -311,10 +267,10 @@ npm run build
 | TxSignError | `1` | ProofGeneration | `WALLET_SIGN_PROOF_GENERATION` |
 | TxSignError | `2` | UserDeclined | `WALLET_SIGN_USER_DECLINED` |
 | TxSignError (CIP-95 ext) | `3` | DeprecatedCertificate | `TX_LEDGER_VALIDATION_FAILED` |
-| DataSignError | `1` | ProofGeneration | `WALLET_DATA_SIGN_PROOF_GENERATION` |
-| DataSignError | `2` | AddressNotPK | `WALLET_DATA_SIGN_ADDRESS_NOT_PK` |
-| DataSignError | `3` | UserDeclined | `WALLET_DATA_SIGN_USER_DECLINED` |
-| PaginateError | n/a (`maxSize`) | requested page exceeds range | `WALLET_PAGINATION_OUT_OF_RANGE` |
+| DataSignError (wallet-specific observed behavior) | `1` | ProofGeneration | `WALLET_DATA_SIGN_PROOF_GENERATION` |
+| DataSignError (wallet-specific observed behavior) | `2` | AddressNotPK | `WALLET_DATA_SIGN_ADDRESS_NOT_PK` |
+| DataSignError (wallet-specific observed behavior) | `3` | UserDeclined | `WALLET_DATA_SIGN_USER_DECLINED` |
+| PaginateError (wallet-specific observed behavior) | n/a (`maxSize`) | requested page exceeds range | `WALLET_PAGINATION_OUT_OF_RANGE` |
 | TxSendError | `1` | Refused | `WALLET_SUBMIT_REFUSED` |
 | TxSendError | `2` | Failure | `WALLET_SUBMIT_FAILURE` |
 
@@ -338,12 +294,34 @@ Submit-path disambiguation note: `APIError` `code=-2` normally maps to `WALLET_I
 
 ## Node String Heuristics
 
+The following are heuristic regex matches (best-effort, not protocol-authoritative):
+
 - `/DeserialiseFailure|DecoderFailure|expected word/i` -> `TX_DESERIALISE_FAILURE`
 - `/BadInputsUTxO/i` -> `TX_INPUTS_MISSING_OR_SPENT`
 - `/OutputTooSmallUTxO|BabbageOutputTooSmallUTxO/i` -> `TX_OUTPUT_TOO_SMALL`
 - `/ValueNotConservedUTxO/i` -> `TX_VALUE_NOT_CONSERVED`
 - `/ScriptFailure|PlutusFailure|EvaluationFailure|ValidationTagMismatch|redeemer.*execution units/i` -> `TX_SCRIPT_EVALUATION_FAILED`
 - `/ShelleyTxValidationError|ApplyTxError/i` -> `TX_LEDGER_VALIDATION_FAILED` when no inner specific tag is found
+
+## Contributing / Local Development
+
+Validate this repository locally:
+
+```bash
+npm install
+npm test
+npm run typecheck
+npm run build
+```
+
+Capture runtime fixtures before rethrowing:
+
+```ts
+console.error("RUNTIME_ERROR_SAMPLE", {
+  err,
+  ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost", network: "preprod" }
+});
+```
 
 ## Example
 

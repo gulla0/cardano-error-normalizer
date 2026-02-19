@@ -22,6 +22,7 @@ export { fromMeshError } from "./adapters/mesh.ts";
 export { fromNodeStringError } from "./adapters/node-string.ts";
 export { withErrorSafety } from "./utils/safeProvider.ts";
 export type { WithErrorSafetyOptions } from "./utils/safeProvider.ts";
+export { isCardanoAppError } from "./utils/guards.ts";
 export { meshProviderPreset } from "./presets/meshProvider.ts";
 export type { MeshProviderPresetOptions } from "./presets/meshProvider.ts";
 export { cip30WalletPreset } from "./presets/cip30Wallet.ts";

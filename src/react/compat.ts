@@ -6,44 +6,33 @@ import {
   type HookBindings,
   type UseCardanoOpResult
 } from "./useCardanoOp.ts";
-export {
-  createUseCardanoOp,
-  type HookBindings,
-  type UseCardanoOpOptions,
-  type UseCardanoOpResult
+
+export type {
+  HookBindings,
+  UseCardanoOpOptions,
+  UseCardanoOpResult
 } from "./useCardanoOp.ts";
 
-export interface UseCardanoErrorConfig<TArgs extends unknown[], TData> {
+export interface UseCardanoErrorCompatConfig<TArgs extends unknown[], TData> {
   operation?: (...args: TArgs) => Promise<TData>;
   defaults?: Partial<NormalizeContext> | ((...args: TArgs) => Partial<NormalizeContext>);
   config?: {
     normalizer?: Normalizer;
     normalizerConfig?: Partial<NormalizerConfig>;
     onError?: (normalized: CardanoAppError, args: TArgs) => void;
-    /**
-     * Advanced compatibility override for non-standard runtimes or tests.
-     * Prefer the default auto-binding path in real React applications.
-     */
     hooks?: HookBindings;
   };
 }
 
-export interface ExecuteWithSafetyOptions<TArgs extends unknown[]> {
-  ctx: NormalizeContext | ((...args: TArgs) => NormalizeContext);
-  normalizer?: Normalizer;
-  normalizerConfig?: Partial<NormalizerConfig>;
-  onError?: (normalized: CardanoAppError, args: TArgs) => void;
-}
-
-export interface UseCardanoErrorResult<TArgs extends unknown[], TData>
+export interface UseCardanoErrorCompatResult<TArgs extends unknown[], TData>
   extends UseCardanoOpResult<TArgs, TData> {
   normalize: (raw: unknown, overrideCtx?: Partial<NormalizeContext>) => CardanoAppError;
 }
 
 export function useCardanoError<TArgs extends unknown[], TData>(
-  options: UseCardanoErrorConfig<TArgs, TData> = {}
-): UseCardanoErrorResult<TArgs, TData> {
-  const hooks = resolveHookBindings(options.config?.hooks);
+  options: UseCardanoErrorCompatConfig<TArgs, TData> = {}
+): UseCardanoErrorCompatResult<TArgs, TData> {
+  const hooks = options.config?.hooks ?? resolveReactBindingsFromRuntime();
   const useCardanoOp = createUseCardanoOp(hooks);
   const normalizer = resolveNormalizer(options.config?.normalizer, options.config?.normalizerConfig);
   const operation = options.operation ?? (async () => undefined as TData);
@@ -59,24 +48,6 @@ export function useCardanoError<TArgs extends unknown[], TData>(
     normalize(raw: unknown, overrideCtx?: Partial<NormalizeContext>): CardanoAppError {
       const mergedCtx = resolveContext(options.defaults, [] as unknown as TArgs, overrideCtx);
       return normalizer.normalize(raw, mergedCtx);
-    }
-  };
-}
-
-export function executeWithSafety<TArgs extends unknown[], TData>(
-  operation: (...args: TArgs) => Promise<TData>,
-  options: ExecuteWithSafetyOptions<TArgs>
-): (...args: TArgs) => Promise<TData> {
-  const normalizer = resolveNormalizer(options.normalizer, options.normalizerConfig);
-
-  return async (...args: TArgs): Promise<TData> => {
-    try {
-      return await operation(...args);
-    } catch (err) {
-      const ctx = typeof options.ctx === "function" ? options.ctx(...args) : options.ctx;
-      const normalized = normalizer.normalize(err, ctx);
-      options.onError?.(normalized, args);
-      throw normalized;
     }
   };
 }
@@ -111,12 +82,28 @@ function resolveContext<TArgs extends unknown[]>(
   };
 }
 
-function resolveHookBindings(hooks?: HookBindings): HookBindings {
-  if (hooks) {
-    return hooks;
+type RuntimeUseState = HookBindings["useState"];
+type RuntimeUseCallback = HookBindings["useCallback"];
+type RuntimeReactLike = {
+  useState?: RuntimeUseState;
+  useCallback?: RuntimeUseCallback;
+};
+
+function resolveReactBindingsFromRuntime(): HookBindings {
+  const candidate = globalThis as { React?: RuntimeReactLike };
+  const runtimeReact = candidate.React;
+  if (
+    runtimeReact &&
+    typeof runtimeReact.useState === "function" &&
+    typeof runtimeReact.useCallback === "function"
+  ) {
+    return {
+      useState: runtimeReact.useState,
+      useCallback: runtimeReact.useCallback
+    };
   }
 
   throw new Error(
-    "React hook bindings are required. Pass config.hooks from `react` (for example: { useState, useCallback }), or use `@gulla0/cardano-error-normalizer/react/compat` for legacy global React runtimes."
+    "React runtime hooks are unavailable. Expose `globalThis.React` or pass config.hooks explicitly."
   );
 }

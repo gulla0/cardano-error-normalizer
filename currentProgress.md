@@ -106,36 +106,32 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Post-release runtime fixture monitoring`
-- Current task: `Monitoring mode (optional/trigger-based): no immediate action required; wait for the next newly observed runtime payload sample`
+- Active section: `DX policy hardening + post-release runtime fixture monitoring`
+- Current task: `DX hardening shipped (README flow, React compat split, type guard); return to monitoring mode and wait for next newly observed runtime payload sample`
 - Blockers: `none`
 
-## DX Follow-up Task Queue (Open)
+## DX Hardening Task Queue (Completed)
 
-### A) React Auto-Bindings (Primary Remaining DX Gap)
-- [x] Replace manual `config.hooks` requirement in `useCardanoError` with runtime React auto-bindings in `src/react/*`.
-- [x] Remove strict manual-runtime throw path from `defaultHookBindings()` once auto-bindings are wired.
-- [x] Keep `createUseCardanoOp` compatibility export for advanced/custom integrations.
+### A) React Entrypoint Policy
+- [x] Remove `globalThis.React` fallback from `@gulla0/cardano-error-normalizer/react` default entrypoint.
+- [x] Keep explicit `config.hooks` as the standard path for strict/bundler-safe behavior.
+- [x] Add compatibility subpath `@gulla0/cardano-error-normalizer/react/compat` for legacy global React runtimes.
 
-### B) API/Compatibility Cleanup
-- [x] Decide final public shape for `UseCardanoErrorConfig.config.hooks` (remove vs keep as optional compatibility override).
-- [x] If retained, ensure default path is bindingless and override path is explicitly documented as advanced-only.
-- [x] Add migration note for consumers currently passing manual hook bindings.
+### B) API/Guard Ergonomics
+- [x] Add and export `isCardanoAppError(err)` type guard.
+- [x] Update consumer snippets to use the guard instead of direct cast-only handling.
 
-### C) Test Coverage for React DX Closure
-- [x] Add/adjust tests validating `useCardanoError` works without `config.hooks`.
-- [x] Add regression test ensuring compatibility behavior for `createUseCardanoOp` remains intact.
-- [x] Run full gates after React changes: `npm test`, `npm run typecheck`, `npm run build`.
+### C) Documentation Restructure
+- [x] Reorder README for consumer flow: install -> quickstart preset wrapper -> manual boundary -> advanced -> React -> contributing.
+- [x] Document canonical-vs-hint field behavior (`walletHint` -> `wallet.name` fallback).
+- [x] Add explicit context contract and one concrete output-shape example.
+- [x] Clarify mapping/resolution authority and heuristic boundaries.
+- [x] Add debug logging warning for raw payload visibility risk.
 
-### D) Documentation + Progress Alignment
-- [x] Update README React section to match final runtime behavior (no bindings-first footgun).
-- [x] Ensure README and source code show the same recommended React usage path.
-- [x] Record final DX closure decision + evidence in the Decisions Log after implementation.
-
-### E) Release Readiness for DX Fixes
-- [x] If API surface changes, update versioning/release notes accordingly.
-- [x] Run package validation (`npm pack --dry-run`) using `/tmp` npm cache strategy if needed.
-- [x] Prepare publish-ready checklist entry once React auto-bindings gap is closed.
+### D) Validation Gates
+- [x] `npm test` passing (`73/73`).
+- [x] `npm run typecheck` passing.
+- [x] `npm run build` passing.
 
 ## Tarball Validation Remediation Queue (Open)
 
@@ -162,6 +158,13 @@
 - [x] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-19
+- Section: DX policy hardening (README/API/React integration ergonomics)
+- Decision: Shift React default policy to explicit hook bindings (`config.hooks`) and move global runtime React fallback to a dedicated compatibility subpath (`@gulla0/cardano-error-normalizer/react/compat`); simultaneously add exported `isCardanoAppError` and rewrite README around preset-wrapper-first integration with explicit context contract and heuristic/authority labeling.
+- Reason: This removes the highest-support-risk behavior (implicit `globalThis.React` dependency), reduces context boilerplate in docs, and clarifies which fields and hints are canonical for consumers.
+- Impact: Default React path is stricter and bundler/SSR-safe, legacy runtime fallback remains available via explicit opt-in, and docs now better match recommended production integration and troubleshooting expectations.
+- Test evidence: `npm test` -> pass (`73/73`); `npm run typecheck` -> pass; `npm run build` -> pass.
+
 - Date: 2026-02-19
 - Section: Post-release maintenance (runtime payload intake - wallet sign TxSignError code 2)
 - Decision: Add real-world fixture row `W-SIGN-DECLINED-TXSIGNERROR-2` for the observed wallet signing payload (`name=TxSignError`, `code=2`, `info="user declined sign tx"`) with expected mapping `WALLET_SIGN_USER_DECLINED`.

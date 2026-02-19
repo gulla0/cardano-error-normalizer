@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+- Exported `isCardanoAppError(err)` type guard for safe catch-block narrowing without raw casts.
+- Added `@gulla0/cardano-error-normalizer/react/compat` subpath for legacy runtimes that rely on `globalThis.React`.
+
+### Changed
+- `@gulla0/cardano-error-normalizer/react` no longer auto-binds hooks from `globalThis.React`; default usage now requires explicit `config.hooks` bindings.
+- README was reorganized around consumer-first flow (install -> preset wrapper quickstart -> manual/advanced -> React -> contributing), with explicit context contract, canonical-vs-hint field behavior, and heuristic/authority annotations for mappings/resolution hints.
+
 ## [0.2.0] - 2026-02-18
 
 ### Added

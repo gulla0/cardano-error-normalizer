@@ -1,3 +1,5 @@
+import type { CardanoAppError } from "../types.ts";
+
 export function extractErrorMessage(err: unknown): string {
   if (typeof err === "string") {
     return err;
@@ -15,4 +17,19 @@ export function extractErrorMessage(err: unknown): string {
   }
 
   return "Unknown Cardano error";
+}
+
+export function isCardanoAppError(err: unknown): err is CardanoAppError {
+  if (err === null || typeof err !== "object") {
+    return false;
+  }
+
+  const candidate = err as Partial<CardanoAppError>;
+  return (
+    candidate.name === "CardanoAppError" &&
+    typeof candidate.code === "string" &&
+    typeof candidate.message === "string" &&
+    typeof candidate.source === "string" &&
+    typeof candidate.stage === "string"
+  );
 }

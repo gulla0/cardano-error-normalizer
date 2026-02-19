@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createUseCardanoOp, executeWithSafety, useCardanoError } from "../src/react/index.ts";
+import { useCardanoError as useCardanoErrorCompat } from "../src/react/compat.ts";
 import type { HookBindings, UseCardanoOpResult } from "../src/react/index.ts";
 
 function createHookHarness<TArgs extends unknown[], TData>(
@@ -79,7 +80,12 @@ test("useCardanoError drives hook state using defaults/config API", async () => 
   assert.equal(hook.error, undefined);
 });
 
-test("useCardanoError resolves hook bindings from runtime React when config.hooks is omitted", async () => {
+test("useCardanoError throws when config.hooks is omitted", () => {
+  const harness = createHookHarness(async (tx: string) => `ok:${tx}`, false);
+  assert.throws(() => harness.render(), /React hook bindings are required/);
+});
+
+test("react compat useCardanoError resolves bindings from runtime React", async () => {
   const runtime = globalThis as unknown as {
     React?: HookBindings;
   };
@@ -109,7 +115,7 @@ test("useCardanoError resolves hook bindings from runtime React when config.hook
   try {
     const render = () => {
       cursor = 0;
-      return useCardanoError({
+      return useCardanoErrorCompat({
         operation: async (tx: string) => `ok:${tx}`,
         defaults: {
           source: "provider_submit",

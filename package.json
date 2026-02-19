@@ -13,6 +13,10 @@
     "./react": {
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js"
+    },
+    "./react/compat": {
+      "types": "./dist/react/compat.d.ts",
+      "import": "./dist/react/compat.js"
     }
   },
   "types": "./dist/index.d.ts",
