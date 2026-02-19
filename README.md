@@ -87,13 +87,11 @@ import {
 } from "@gulla0/cardano-error-normalizer";
 
 const safeMeshProvider = meshProviderPreset(rawMeshProvider, {
-  provider: "blockfrost",
-  network: "preprod"
+  provider: "blockfrost"
 });
 
 const safeWalletApi = cip30WalletPreset(rawWalletApi, {
-  walletHint: "eternl",
-  network: "preprod"
+  walletHint: "eternl"
 });
 ```
 
@@ -321,6 +319,100 @@ console.error("RUNTIME_ERROR_SAMPLE", {
   err,
   ctx: { source: "provider_submit", stage: "submit", provider: "blockfrost", network: "preprod" }
 });
+```
+
+## Next.js + Mesh + Blockfrost + useWallet Integration
+
+This example reflects a working integration using:
+
+- Next.js (App Router)
+- `@meshsdk/core`
+- `@meshsdk/react`
+- Blockfrost
+- Eternl (CIP-30)
+- `meshProviderPreset`
+- `cip30WalletPreset`
+- Shared `createNormalizer`
+
+### 1) Create a Shared Normalizer
+
+```ts
+// src/errors/normalizer.ts
+import { createNormalizer } from "@gulla0/cardano-error-normalizer";
+
+export const normalizer = createNormalizer({
+  defaults: {
+    provider: "blockfrost",
+    network: "preprod"
+  }
+});
+```
+
+### 2) Wrap Mesh Blockfrost Provider (Server)
+
+```ts
+import { BlockfrostProvider } from "@meshsdk/core";
+import { meshProviderPreset } from "@gulla0/cardano-error-normalizer";
+import { normalizer } from "@/errors/normalizer";
+
+const rawProvider = new BlockfrostProvider(process.env.BLOCKFROST!);
+
+export const blockchain_provider = meshProviderPreset(rawProvider, {
+  provider: "blockfrost",
+  normalizer
+});
+```
+
+### 3) Wrap `useWallet()` (Client)
+
+```ts
+"use client";
+
+import { useWallet } from "@meshsdk/react";
+import { useMemo } from "react";
+import { cip30WalletPreset } from "@gulla0/cardano-error-normalizer";
+import { normalizer } from "@/errors/normalizer";
+
+const { wallet: rawWallet, connected } = useWallet();
+
+const wallet = useMemo(() => {
+  if (!rawWallet) return null;
+
+  return cip30WalletPreset(rawWallet, {
+    walletHint: "eternl",
+    normalizer
+  });
+}, [rawWallet]);
+```
+
+Now:
+
+```ts
+await wallet.signTx(...);
+await wallet.submitTx(...);
+await wallet.getUtxos();
+```
+
+throw normalized `CardanoAppError`.
+
+### 4) Handle Errors in UI
+
+```ts
+import { isCardanoAppError } from "@gulla0/cardano-error-normalizer";
+
+try {
+  await wallet.signTx(tx);
+} catch (error) {
+  if (isCardanoAppError(error)) {
+    setError(
+      error.resolution?.title ??
+      error.message ??
+      error.code
+    );
+  } else {
+    setError("Unexpected application error");
+  }
+}
 ```
 
 ## Example
