@@ -106,8 +106,8 @@
 - [x] CI tests pass (local `npm test` gate and repository CI workflow configured).
 
 ## Current Build Focus
-- Active section: `Tarball validation remediation (release-candidate recovery)`
-- Current task: `Agent-owned: release-candidate exit criteria (consumer tarball install/import validation and publish-candidate mark)`
+- Active section: `Tarball validation remediation (release-candidate recovery) - completed`
+- Current task: `Agent-owned: release-candidate exit criteria closed; tarball marked publish candidate`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -156,12 +156,19 @@
 - [x] Re-run verification-focused tests and full suite to lock regressions.
 
 ### D) Release Candidate Exit Criteria
-- [ ] Consumer tarball install should be non-extraneous (`--save`) and import checks pass for root + `./react`.
+- [x] Consumer tarball install should be non-extraneous (`--save`) and import checks pass for root + `./react`.
 - [x] Runtime smoke for `useCardanoError` without manual hooks must pass.
 - [x] Real failing provider operation must normalize to expected non-`UNKNOWN` code where mapping exists.
-- [ ] Only then mark tarball as publish candidate.
+- [x] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-19
+- Section: Tarball remediation section D closure (release-candidate exit criteria)
+- Decision: Close section D and mark `gulla0-cardano-error-normalizer-0.2.0.tgz` as publish candidate after successful consumer install/import validation with `--save` and non-extraneous dependency state.
+- Reason: Remaining open gates required proof that consumer installation persists as a declared dependency and that both package entry points (`@gulla0/cardano-error-normalizer` and `@gulla0/cardano-error-normalizer/react`) import correctly from the packed artifact.
+- Impact: Tarball validation remediation queue is fully closed; candidate is ready for publish/handoff execution.
+- Test evidence: `NPM_CONFIG_CACHE=/tmp/.npm-cache npm install --save --offline --no-audit --no-fund /Users/gzero/Desktop/cardano-error-handling/gulla0-cardano-error-normalizer-0.2.0.tgz` -> pass (`added 1 package`); `node import-check.mjs` -> `rootExports 13`, `reactExports 3`; `npm ls --depth=0` -> only declared dependency `@gulla0/cardano-error-normalizer@0.2.0`; consumer `package.json` records dependency under `dependencies`.
+
 - Date: 2026-02-19
 - Section: Tarball remediation section C closure (real-payload mapping hardening)
 - Decision: Close section C after recording a new human-provided runtime payload batch (`E-USB-REQUESTDEVICE`, `E-NO-CONNECTION`, `E-VALUE-SIZE-5000`), updating runtime fixture expectations where deterministic mapping exists (`E-NO-CONNECTION` -> `NETWORK_UNREACHABLE`), and adding connectivity meta inference coverage.
