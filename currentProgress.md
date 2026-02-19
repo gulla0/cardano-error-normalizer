@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Tarball validation remediation (release-candidate recovery)`
-- Current task: `Human-owned: run consumer-app runtime smoke for useCardanoError without config.hooks and report pass/fail + startup stack trace if failing`
+- Current task: `Human-owned: capture raw provider failure payload(s) that still normalize to UNKNOWN during consumer validation`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -145,9 +145,9 @@
 - [x] Re-run local publish gates before handoff (`npm test`, `npm run typecheck`, `npm run build`, `npm pack --dry-run`).
 
 ### B) React Runtime Smoke Recovery
-- [ ] Validate `useCardanoError` in a consumer app without `config.hooks`; confirm no startup throw.
-- [ ] If throw persists, patch React binding resolution path and add/adjust regression tests for packed-runtime behavior.
-- [ ] Repack and re-test until React default path is green.
+- [x] Validate `useCardanoError` in a consumer app without `config.hooks`; confirm no startup throw.
+- [x] If throw persists, patch React binding resolution path and add/adjust regression tests for packed-runtime behavior.
+- [x] Repack and re-test until React default path is green.
 
 ### C) Real-Payload Mapping Gaps (`UNKNOWN` on provider failures)
 - [ ] Capture the exact raw provider error payload(s) that normalized to `UNKNOWN` during consumer validation.
@@ -162,6 +162,13 @@
 - [ ] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-18
+- Section: Tarball remediation section B closure (React runtime smoke recovery)
+- Decision: Close section B as passed based on external consumer-app validation of `@gulla0/cardano-error-normalizer@0.2.0` with `useCardanoError()` default path (no `config.hooks`) and no startup throw.
+- Reason: Section B completion gate is runtime verification in a real consumer app; the reported run passed and did not produce the previously observed manual-hook startup failure.
+- Impact: React runtime smoke risk is retired for this candidate; next active remediation section is C (`UNKNOWN` provider payload capture/mapping hardening).
+- Test evidence: External consumer report (`npm ls @gulla0/cardano-error-normalizer` -> `0.2.0`, `npx tsc --noEmit` -> pass, `npm run dev` -> pass with Next.js startup ready in `356ms`); note: `npm run build` font-fetch failure reported as unrelated environment/network issue.
+
 - Date: 2026-02-18
 - Section: Tarball remediation section A closure (packaging/artifact correctness)
 - Decision: Close section A after rebuilding/packing a fresh candidate and validating packed React runtime behavior and local publish gates.
@@ -541,8 +548,8 @@
 
 ## Testing Notes
 - Last run: 2026-02-18
-- Result: Pass (`npm test` -> `69/69`; `npm run typecheck` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run` -> passing)
-- Notes: Release-readiness gates rerun cleanly after confirming DX surface notes in changelog and release checklist alignment.
+- Result: Pass (external consumer smoke: `npx tsc --noEmit` pass; `npm run dev` pass with no `useCardanoError` startup throw; local gates previously passing: `npm test` -> `69/69`; `npm run typecheck` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run` -> passing)
+- Notes: Consumer-reported `npm run build` failure is environment-specific Google Fonts network fetch blocking (`Geist`, `Geist Mono`) and not attributed to `useCardanoError` integration/runtime bindings.
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
