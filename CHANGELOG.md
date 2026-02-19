@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [Unreleased]
+## [0.3.0] - 2026-02-19
 
 ### Added
 - Exported `isCardanoAppError(err)` type guard for safe catch-block narrowing without raw casts.

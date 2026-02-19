@@ -2,7 +2,7 @@
 
 A small TypeScript library that normalizes heterogeneous Cardano stack errors into a stable `CardanoAppError` shape.
 
-Current package version in this repository: `0.2.0`.
+Current package version in this repository: `0.3.0`.
 
 ## Install
 

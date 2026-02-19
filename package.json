@@ -1,6 +1,6 @@
 {
   "name": "@gulla0/cardano-error-normalizer",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Normalize heterogeneous Cardano stack errors into a stable CardanoAppError shape.",
   "license": "MIT",
   "type": "module",
