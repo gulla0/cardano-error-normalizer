@@ -107,7 +107,7 @@
 
 ## Current Build Focus
 - Active section: `Tarball validation remediation (release-candidate recovery)`
-- Current task: `Human-owned: capture raw provider failure payload(s) that still normalize to UNKNOWN during consumer validation`
+- Current task: `Agent-owned: release-candidate exit criteria (consumer tarball install/import validation and publish-candidate mark)`
 - Blockers: `none`
 
 ## DX Follow-up Task Queue (Open)
@@ -150,18 +150,25 @@
 - [x] Repack and re-test until React default path is green.
 
 ### C) Real-Payload Mapping Gaps (`UNKNOWN` on provider failures)
-- [ ] Capture the exact raw provider error payload(s) that normalized to `UNKNOWN` during consumer validation.
-- [ ] Add fixture rows under verification/runtime fixture packs for those payloads with expected canonical codes.
-- [ ] Update adapter/meta inference logic as needed to map those payloads deterministically (while preserving existing mappings).
-- [ ] Re-run verification-focused tests and full suite to lock regressions.
+- [x] Capture the exact raw provider error payload(s) that normalized to `UNKNOWN` during consumer validation.
+- [x] Add fixture rows under verification/runtime fixture packs for those payloads with expected canonical codes.
+- [x] Update adapter/meta inference logic as needed to map those payloads deterministically (while preserving existing mappings).
+- [x] Re-run verification-focused tests and full suite to lock regressions.
 
 ### D) Release Candidate Exit Criteria
 - [ ] Consumer tarball install should be non-extraneous (`--save`) and import checks pass for root + `./react`.
-- [ ] Runtime smoke for `useCardanoError` without manual hooks must pass.
-- [ ] Real failing provider operation must normalize to expected non-`UNKNOWN` code where mapping exists.
+- [x] Runtime smoke for `useCardanoError` without manual hooks must pass.
+- [x] Real failing provider operation must normalize to expected non-`UNKNOWN` code where mapping exists.
 - [ ] Only then mark tarball as publish candidate.
 
 ## Decisions Log
+- Date: 2026-02-19
+- Section: Tarball remediation section C closure (real-payload mapping hardening)
+- Decision: Close section C after recording a new human-provided runtime payload batch (`E-USB-REQUESTDEVICE`, `E-NO-CONNECTION`, `E-VALUE-SIZE-5000`), updating runtime fixture expectations where deterministic mapping exists (`E-NO-CONNECTION` -> `NETWORK_UNREACHABLE`), and adding connectivity meta inference coverage.
+- Reason: Section C required concrete payload capture plus regression locking for observed `UNKNOWN` cases, and only one payload had a clear existing canonical mapping path without introducing speculative new taxonomy codes.
+- Impact: Real-payload mapping gap is reduced and regression-protected; remaining release-candidate work is consumer tarball install/import validation and publish-candidate finalization.
+- Test evidence: `npm test -- test/verification.fixtures.test.ts` -> `4/4` passing; `npm test` -> `70/70` passing.
+
 - Date: 2026-02-18
 - Section: Tarball remediation section B closure (React runtime smoke recovery)
 - Decision: Close section B as passed based on external consumer-app validation of `@gulla0/cardano-error-normalizer@0.2.0` with `useCardanoError()` default path (no `config.hooks`) and no startup throw.
@@ -547,9 +554,9 @@
 - Impact: Core types are now ready for resolution-hint attachment and debug/trace behaviors without breaking existing normalization flows.
 
 ## Testing Notes
-- Last run: 2026-02-18
-- Result: Pass (external consumer smoke: `npx tsc --noEmit` pass; `npm run dev` pass with no `useCardanoError` startup throw; local gates previously passing: `npm test` -> `69/69`; `npm run typecheck` -> passing; `NPM_CONFIG_CACHE=/tmp/.npm-cache npm pack --dry-run` -> passing)
-- Notes: Consumer-reported `npm run build` failure is environment-specific Google Fonts network fetch blocking (`Geist`, `Geist Mono`) and not attributed to `useCardanoError` integration/runtime bindings.
+- Last run: 2026-02-19
+- Result: Pass (`npm test -- test/verification.fixtures.test.ts` -> `4/4`; `npm test` -> `70/70`)
+- Notes: Runtime fixture path now uses smart normalizer parity (`test/real-world-payloads.test.ts`), `E-NO-CONNECTION` now asserts `NETWORK_UNREACHABLE`, and `inferErrorMeta` adds connectivity inference (`inferredKind="connectivity_unreachable"`).
 
 ## Commit Log
 - 2026-02-17: `4902835` - Build Phase 1 core types and normalizer.
@@ -670,6 +677,14 @@ Task 5 (human):
 - Received:
   - Decision: `core package framework-agnostic` + `React hook in sibling package/entrypoint`
   - Approval timestamp: `2026-02-18`
+
+Task 6 (human):
+- Provide exact raw payload(s) from consumer validation that still normalized to `UNKNOWN` for tarball remediation section C.
+- Status: `Completed`
+- Received:
+  - Artifact: in-thread payload batch with IDs `E-USB-REQUESTDEVICE`, `E-NO-CONNECTION`, `E-VALUE-SIZE-5000` (received 2026-02-19).
+  - Context coverage: `source`, `stage`, provider/wallet hint, operation, and expected behavior notes per payload.
+- Needed by agent to complete section C fixture locking and mapping hardening.
 
 ## 2026-02-18 Dependency/CI Follow-Up
 - Trigger:

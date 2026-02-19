@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-import { createNormalizer } from "../src/normalizer.ts";
+import { createSmartNormalizer } from "../src/core/normalize.ts";
 import type { NormalizeContext, CardanoAppError } from "../src/types.ts";
 
 interface RealWorldFixtureRow {
@@ -17,7 +17,7 @@ interface RealWorldFixtureRow {
 test("real-world payload fixtures normalize to stable codes", async () => {
   const fixturePath = new URL("./fixtures/real-world-errors.json", import.meta.url);
   const rows = JSON.parse(await readFile(fixturePath, "utf8")) as RealWorldFixtureRow[];
-  const normalizer = createNormalizer();
+  const normalizer = createSmartNormalizer();
   const seenIds = new Set<string>();
 
   assert.ok(rows.length >= 5, "expected at least five real-world fixtures");

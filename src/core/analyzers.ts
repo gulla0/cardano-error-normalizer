@@ -4,6 +4,8 @@ type InferredMeta = Record<string, unknown>;
 
 const NODE_LEDGER_PATTERN =
   /DeserialiseFailure|DecoderFailure|expected word|BadInputsUTxO|OutputTooSmallUTxO|BabbageOutputTooSmallUTxO|ValueNotConservedUTxO|ScriptFailure|PlutusFailure|EvaluationFailure|ValidationTagMismatch|redeemer.*execution units|ShelleyTxValidationError|ApplyTxError/i;
+const CONNECTIVITY_PATTERN =
+  /failed to fetch|no connection|network(?:\s+is)?\s+(?:offline|down|unreachable)|econnrefused|enotfound|ehostunreach/i;
 
 export function inferErrorMeta(err: unknown): InferredMeta {
   const blockfrost = inferBlockfrostMeta(err);
@@ -19,6 +21,11 @@ export function inferErrorMeta(err: unknown): InferredMeta {
   const node = inferNodeMeta(err);
   if (node !== null) {
     return node;
+  }
+
+  const connectivity = inferConnectivityMeta(err);
+  if (connectivity !== null) {
+    return connectivity;
   }
 
   return {};
@@ -85,6 +92,18 @@ function inferNodeMeta(err: unknown): InferredMeta | null {
   return {
     inferredProvider: "cardano-node",
     inferredKind: "node_ledger_string"
+  };
+}
+
+function inferConnectivityMeta(err: unknown): InferredMeta | null {
+  const message = extractErrorMessage(err);
+  if (!CONNECTIVITY_PATTERN.test(message)) {
+    return null;
+  }
+
+  return {
+    inferredProvider: "network",
+    inferredKind: "connectivity_unreachable"
   };
 }
 

@@ -40,3 +40,10 @@ test("inferErrorMeta detects node ledger string patterns", () => {
   assert.equal(inferred.inferredProvider, "cardano-node");
   assert.equal(inferred.inferredKind, "node_ledger_string");
 });
+
+test("inferErrorMeta detects network connectivity failure strings", () => {
+  const inferred = inferErrorMeta("Status: No connection");
+
+  assert.equal(inferred.inferredProvider, "network");
+  assert.equal(inferred.inferredKind, "connectivity_unreachable");
+});

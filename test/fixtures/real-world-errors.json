@@ -86,7 +86,7 @@
     "capturedFrom": "error-payload-examples.md",
     "ctx": { "source": "provider_query", "stage": "submit", "provider": "eternl", "network": "mainnet" },
     "err": "Status: No connection",
-    "expectedCode": "UNKNOWN"
+    "expectedCode": "NETWORK_UNREACHABLE"
   },
   {
     "id": "E-VALUE-SIZE-5000",
